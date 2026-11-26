@@ -2984,7 +2984,7 @@
 <script>
 // Everything on the page comes from here. Update these numbers and redeploy.
 const DATA = {
- "updated": "2026-11-26T15:30:24Z",
+ "updated": "2026-11-26T15:47:05Z",
  "historyStarts": "2026-11-20",
  "leonardoOpened": "2026-11-23T23:33:19Z",
  "stops": [
@@ -3001,7 +3001,7 @@ const DATA = {
  "withFixes": 5,
  "score": {
   "model": "PortWatch VI",
-  "note": "Best result on the main build on any PC, scored the way PortWatch VI scores builds. playable is 1: in the first mission the player is in control and the on-screen hints react to the stick (Linux on an RX 7800 XT with an Intel processor, newest main version); PortWatch's Playable asks for a character you control with the HUD working, and it counted a build whose screen was black while a player walked. On the main build the 3D picture still does not draw, so rendering is 0 (with waiting changes one RTX 3070 showed parts of the first scene), and it runs at 1 to 2 frames a second.",
+  "note": "Best result on the main build on any PC, scored the way PortWatch VI scores builds. playable is 1: in the first mission the player is in control and the on-screen hints react to the stick (Linux on an RX 7800 XT with an Intel processor, newest main version); PortWatch's Playable asks for a character you control with the HUD working, and it counted a build whose screen was black while a player walked. On the main build the lit 3D world now draws on NVIDIA once every graphics program the run uses is built ahead (RTX 5070 Ti laptop on main at ab4fcd906, 26 November, docs/nvidia_world_recipe.md section 10: lit world in the window at 300 s and 600 s, 3 runs to the 900 s cap with no device loss), with some textures wrong and at about 0.4 frames a second, so rendering is 0.2; on other cards the main build still shows no 3D picture, and the world runs at 1 to 2 frames a second.",
   "ladder": {
    "loads": 1,
    "boots": 1,
@@ -3017,7 +3017,7 @@ const DATA = {
   },
   "tracks": {
    "story": 0,
-   "render": 0,
+   "render": 0.2,
    "fps": 1.5,
    "stability": "unknown"
   }
@@ -3080,7 +3080,7 @@ const DATA = {
   [
    "Graphics",
    "wait",
-   "The game opens in its own window, but the 3D world does not show yet in the official version. With fixes waiting for review, one PC shows much of the opening city; people up close, roads and nearby buildings are still black."
+   "In the official version the lit 3D world now shows on NVIDIA cards once the game's graphics programs are built ahead of time, but at under 1 frame a second and with some textures wrong. On other cards it still needs fixes waiting for review."
   ],
   [
    "Sound and video",
@@ -3095,9 +3095,9 @@ const DATA = {
  ],
  "numbers": [
   [
-   "831",
+   "836",
    "changes sent in",
-   "since Leonardo opened; 604 accepted, 54 waiting for review"
+   "since Leonardo opened; 605 accepted, 58 waiting for review"
   ],
   [
    "41",
@@ -3110,7 +3110,7 @@ const DATA = {
    "66 being worked on, 389 done"
   ],
   [
-   "12,470",
+   "12,479",
    "code edits",
    "since work began on 20 November"
   ],
@@ -6462,7 +6462,7 @@ const DATA = {
   [
    "2026-11-25T21:12:07Z",
    "D3D",
-   "waiting"
+   "accepted"
   ],
   [
    "2026-11-25T21:18:27Z",
@@ -7146,7 +7146,7 @@ const DATA = {
   ],
   [
    "2026-11-26T12:49:06Z",
-   "RT",
+   "SHADER",
    "waiting"
   ],
   [
@@ -7288,9 +7288,54 @@ const DATA = {
    "2026-11-26T15:23:05Z",
    "RT",
    "waiting"
+  ],
+  [
+   "2026-11-26T15:31:14Z",
+   "RT",
+   "waiting"
+  ],
+  [
+   "2026-11-26T15:32:10Z",
+   "D3D",
+   "waiting"
+  ],
+  [
+   "2026-11-26T15:34:42Z",
+   "D3D",
+   "waiting"
+  ],
+  [
+   "2026-11-26T15:35:04Z",
+   "D3D",
+   "waiting"
+  ],
+  [
+   "2026-11-26T15:40:43Z",
+   "RT",
+   "waiting"
   ]
  ],
  "news": [
+  [
+   "2026-11-26T15:40:00Z",
+   "team",
+   "Linux test with AMD graphics and fixes that are not accepted yet: the opening prison-yard scene showed fully lit and textured for a few minutes, at a few frames a second, before the graphics card froze. The team has narrowed the freezes down to two lighting programs that sometimes run longer than the driver allows; this is still in testing on one PC."
+  ],
+  [
+   "2026-11-26T14:15:40Z",
+   "ok",
+   "NVIDIA on the official version: the NVIDIA setup guide now shows how to build the game's graphics programs ahead of time, and with that the lit open world appears in the window, at under half a frame a second. In a test on an RTX 5070 Ti laptop, three runs reached the 15-minute test limit with no graphics card loss; some textures are still wrong."
+  ],
+  [
+   "2026-11-26T13:55:31Z",
+   "ok",
+   "Two fixes are accepted for the optional limit on how long the game's graphics programs may loop: it no longer breaks programs it changes, and it no longer skips heavy lighting work entirely, which had kept the opening scene black on Linux with AMD graphics."
+  ],
+  [
+   "2026-11-26T12:06:47Z",
+   "ok",
+   "A new start option makes the game run as the smaller Series S console, which draws at 1280 by 720: on an RTX 3060 that gave about 29% more frames and a cleaner picture. It stays off unless switched on, because on one RTX 4070 it showed columns of black dots."
+  ],
   [
    "2026-11-26T08:33:00Z",
    "ok",
@@ -7947,7 +7992,7 @@ const DATA = {
    "Leonardo opens and the first change comes in"
   ]
  ],
- "heroCaveat": "though the 3D picture does not draw yet"
+ "heroCaveat": "though the 3D world shows only on NVIDIA cards after an extra setup step, at under 1 frame a second"
 };
 
 
