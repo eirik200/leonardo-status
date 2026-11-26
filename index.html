@@ -856,6 +856,7 @@
     align-items: center;
     gap: 7px;
   }
+  .legend-item[hidden] { display: none; }
   .swatch {
     width: 14px;
     height: 10px;
@@ -1275,142 +1276,6 @@
     font-weight: 600;
   }
 
-  /* Part 2: Tested on every kind of PC (live from DATA.platforms) */
-  .hw-panel {
-    padding: 18px 22px 20px;
-    border-bottom: 1px solid var(--line);
-  }
-  .hw-head {
-    display: flex;
-    align-items: baseline;
-    justify-content: space-between;
-    gap: 8px 18px;
-    flex-wrap: wrap;
-    margin-bottom: 6px;
-  }
-  .hw-title {
-    font-family: var(--display);
-    font-weight: 700;
-    font-size: 18px;
-    letter-spacing: -0.015em;
-    color: var(--ink);
-  }
-  .hw-meta {
-    font-family: var(--mono);
-    font-size: 12.5px;
-    color: var(--muted);
-  }
-  .hw-lead {
-    font-size: 14.5px;
-    color: var(--muted);
-    line-height: 1.5;
-    max-width: 76ch;
-    margin-bottom: 14px;
-  }
-  .hw-grid {
-    list-style: none;
-    padding: 0;
-    display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 10px;
-  }
-  .hw-card {
-    background: rgba(18, 19, 21, 0.42);
-    border: 1px solid var(--line);
-    border-radius: 6px;
-    padding: 11px 13px;
-    display: flex;
-    flex-direction: column;
-    gap: 7px;
-  }
-  .hw-card.untested {
-    border-style: dashed;
-    border-color: var(--line-strong);
-  }
-  .hw-card-top {
-    display: flex;
-    align-items: baseline;
-    justify-content: space-between;
-    gap: 8px;
-  }
-  .hw-card-name {
-    font-size: 14.5px;
-    font-weight: 700;
-    color: var(--ink);
-    line-height: 1.25;
-  }
-  .hw-card-stop {
-    font-family: var(--mono);
-    font-size: 12px;
-    font-weight: 600;
-    color: var(--rose-text);
-    white-space: nowrap;
-  }
-  .hw-card.untested .hw-card-stop {
-    color: var(--dim);
-    font-weight: 500;
-  }
-  .hw-card-detail {
-    font-size: 12.5px;
-    color: var(--muted);
-    line-height: 1.3;
-  }
-  .hw-pips {
-    display: grid;
-    grid-template-columns: repeat(8, minmax(0, 1fr));
-    gap: 3px;
-    margin-top: 2px;
-  }
-  .hw-pip {
-    height: 6px;
-    border-radius: 2px;
-    background: #1c1d21;
-    border: 1px solid #303138;
-  }
-  .hw-pip.done {
-    background: var(--rose);
-    border-color: var(--rose);
-  }
-  .hw-pip.wait {
-    position: relative;
-    overflow: hidden;
-    background: rgba(214, 161, 78, 0.18);
-    border-color: var(--amber);
-  }
-  .hw-pip.wait::before {
-    content: "";
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    left: -12px;
-    width: calc(100% + 12px);
-    background: linear-gradient(
-      -45deg,
-      rgba(214, 161, 78, 0.9) 25%,
-      rgba(214, 161, 78, 0.24) 25%,
-      rgba(214, 161, 78, 0.24) 50%,
-      rgba(214, 161, 78, 0.9) 50%,
-      rgba(214, 161, 78, 0.9) 75%,
-      rgba(214, 161, 78, 0.24) 75%
-    );
-    background-size: 12px 12px;
-    animation: hatchShift 4.4s linear infinite;
-    will-change: transform;
-  }
-  .hw-card-status {
-    font-size: 12.5px;
-    color: var(--muted);
-    line-height: 1.3;
-  }
-  .hw-card-status strong {
-    color: var(--ink);
-    font-weight: 500;
-  }
-  .hw-card-status .hw-wait-note {
-    color: var(--amber-text);
-  }
-
-  /* Part 3: Real-data change review bar */
   .approach-gate {
     padding: 16px 22px 18px;
     background: rgba(30, 31, 35, 0.42);
@@ -1449,10 +1314,10 @@
     height: 100%;
     transform-origin: left center;
   }
-  html.anim-ready #approachSection:not(.in-view) .approach-bar-track {
+  html.anim-ready #activitySection:not(.in-view) .approach-bar-track {
     transform: scaleX(0);
   }
-  html.anim-ready #approachSection.in-view .approach-bar-track {
+  html.anim-ready #activitySection.in-view .approach-bar-track {
     transform: scaleX(1);
     transition: transform 0.78s cubic-bezier(0.22, 1, 0.36, 1) 0.1s;
   }
@@ -1954,6 +1819,117 @@
     transform: translateY(0) scale(0.985);
   }
 
+  .news-more {
+    background: none;
+    border: 0;
+    padding: 0;
+    font-size: 13.5px;
+    color: var(--rose-text);
+    cursor: pointer;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    white-space: nowrap;
+  }
+  .news-more:hover { color: var(--ink); }
+
+  /* ---------- What it looks like today (26.11) ---------- */
+  .shot-section { padding-top: clamp(26px, 3.4vw, 38px); }
+  .shot-hero {
+    margin: 0;
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    overflow: hidden;
+    background: rgba(24, 25, 28, 0.86);
+    -webkit-backdrop-filter: blur(12px) saturate(1.15);
+            backdrop-filter: blur(12px) saturate(1.15);
+    box-shadow: 0 24px 70px -30px rgba(0, 0, 0, 0.8);
+  }
+  .shot-hero-link { display: block; background: #0b0c0d; }
+  .shot-hero img {
+    display: block;
+    width: 100%;
+    height: auto;
+    aspect-ratio: 1466 / 824;
+    object-fit: cover;
+  }
+  .shot-hero-cap {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 6px 24px;
+    flex-wrap: wrap;
+    padding: 13px 18px 14px;
+    border-top: 1px solid var(--line);
+    font-size: 15px;
+    line-height: 1.5;
+    color: var(--muted);
+  }
+  .shot-hero-cap p { flex: 1 1 420px; min-width: 0; }
+  .shot-hero-cap strong { color: var(--ink); font-weight: 600; }
+  .shot-hero-src { color: var(--dim); font-size: 13.5px; }
+  .shot-hero-more {
+    color: var(--rose-text);
+    font-weight: 500;
+    font-size: 14.5px;
+    text-decoration: none;
+    white-space: nowrap;
+  }
+  .shot-hero-more:hover { color: var(--ink); text-decoration: underline; text-underline-offset: 3px; }
+
+  /* ---------- Closed "more" boxes (26.11) ---------- */
+  .more-details { margin-top: 16px; }
+  .more-details > summary {
+    display: inline-flex;
+    align-items: center;
+    gap: 9px;
+    padding: 7px 14px;
+    border: 1px solid var(--line-strong);
+    border-radius: 6px;
+    background: rgba(24, 25, 28, 0.86);
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--ink);
+    cursor: pointer;
+    list-style: none;
+    transition: border-color 0.14s ease, background-color 0.14s ease;
+  }
+  .more-details > summary::-webkit-details-marker { display: none; }
+  .more-details > summary::before {
+    content: "";
+    width: 6px;
+    height: 6px;
+    border-right: 1.5px solid var(--muted);
+    border-bottom: 1.5px solid var(--muted);
+    transform: rotate(-45deg);
+    transition: transform 0.2s ease;
+  }
+  .more-details[open] > summary::before { transform: rotate(45deg); }
+  .more-details > summary:hover { border-color: var(--muted); background: var(--surface-2); }
+  .more-details[open] > summary { margin-bottom: 14px; }
+  .more-details.inner { margin-top: 16px; }
+  .more-body p { font-size: 14.5px; line-height: 1.55; color: var(--muted); max-width: 78ch; }
+  .more-body p + p { margin-top: 8px; }
+  .more-body strong { color: var(--ink); font-weight: 600; }
+
+  /* The chart card keeps its own height next to "Where work is going" (review 26.11) */
+  #moreNumbers .activity-grid { align-items: start; }
+  #moreNumbers .chart-frame { flex: none; }
+  /* Desktop: a lower picture, centred on the lit window (review 26.11) */
+  @media (min-width: 860px) {
+    .shot-hero img { aspect-ratio: auto; height: 440px; object-position: 55% 50%; }
+  }
+
+  /* Project activity, compact (26.11) */
+  #activitySection .stats-band { margin: 0; padding: 0 22px; border-top: 0; }
+  #activitySection .stat-cell { padding-top: 12px; padding-bottom: 12px; }
+  #activitySection .stat-num { font-size: clamp(24px, 2.4vw, 30px); }
+  #activitySection .stat-lbl { font-size: 14px; margin-top: 3px; }
+  #activitySection .stat-sub { font-size: 13px; }
+  @media (max-width: 859px) {
+    #activitySection .stats-band { padding: 0 16px; }
+    .shot-hero-cap { padding: 12px 14px 13px; font-size: 14.5px; }
+  }
+
   /* ---------- Footer ---------- */
   footer {
     margin-top: clamp(44px, 6vw, 68px);
@@ -2242,8 +2218,6 @@
       90% { transform: translateY(88%); opacity: 1; }
       95%, 100% { transform: translateY(88%); opacity: 0; }
     }
-    .hw-panel { padding: 15px 16px 16px; }
-    .hw-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
     .approach-gate { padding: 15px 16px 16px; }
     .activity-grid { grid-template-columns: 1fr; gap: 14px; }
 
@@ -2264,7 +2238,6 @@
     .discord-btn { order: 2; margin-left: auto; }
     .site-nav { order: 5; width: 100%; margin-left: -10px; }
     .panel { padding: 16px; }
-    .hw-grid { grid-template-columns: 1fr; }
     .arch-pill-direct { white-space: normal; }
     .chart-frame { grid-template-rows: 150px auto; }
     .chart-plot { gap: 2px; }
@@ -2750,7 +2723,7 @@
 </header>
 <!--EARLY-->
 <div class="wrap early-wrap">
-  <p class="early-note"><span class="early-tag">Early version</span> We're doing our best to keep this site updated so you're always up to date.</p>
+  <p class="early-note"><span class="early-tag">Early version</span> The numbers refresh every 30 minutes; test results are added by hand and can lag behind.</p>
 </div>
 <!--/EARLY-->
 
@@ -2793,12 +2766,13 @@
     </div>
   </div>
 
+
   <section class="wrap reveal ambient-scope" id="pcSection" aria-labelledby="pcHeading">
     <div class="sec-head">
       <h2 id="pcHeading">Which PCs get how far</h2>
       <span class="sec-meta" id="pcTestedMeta"></span>
     </div>
-    <p class="sec-lead">A PC gets as far as its weakest part.</p>
+    <p class="sec-lead">A PC gets as far as its weakest part. Linux and Mac run the game through Wine, a free tool that runs Windows programs.</p>
     <div class="matrix-box">
       <div class="matrix-head" aria-hidden="true">
         <span class="matrix-head-lbl">PC setup</span>
@@ -2808,8 +2782,8 @@
       <ul class="pc-list" id="pcList"></ul>
       <div class="matrix-foot">
         <div class="legend">
-          <span class="legend-item"><span class="swatch done" aria-hidden="true"></span>Main build</span>
-          <span class="legend-item"><span class="swatch wait" aria-hidden="true"></span>With waiting fixes</span>
+          <span class="legend-item"><span class="swatch done" aria-hidden="true"></span>Official version</span>
+          <span class="legend-item" id="legendWait" hidden><span class="swatch wait" aria-hidden="true"></span>With fixes waiting for review</span>
           <span class="legend-item"><span class="swatch ahead" aria-hidden="true"></span>Not reached</span>
         </div>
         <span class="cell-inspect" id="cellInspect"></span>
@@ -2824,19 +2798,78 @@
     <div class="parts-grid" id="partsGrid"></div>
   </section>
 
+  <section class="wrap reveal ambient-scope" id="newsSection" aria-labelledby="newsHeading">
+    <div class="sec-head">
+      <h2 id="newsHeading">Recent updates</h2>
+      <div class="filter-bar" id="newsFilters" role="group" aria-label="Filter updates by type"></div>
+    </div>
+    <ul class="news-list" id="newsList"></ul>
+    <div class="more-wrap" id="moreWrap" hidden>
+      <button class="more-btn" id="moreBtn" type="button"></button>
+    </div>
+  </section>
+
+  <section class="wrap reveal ambient-scope" id="activitySection" aria-labelledby="activityHeading">
+    <div class="sec-head">
+      <h2 id="activityHeading">Project activity</h2>
+      <span class="sec-meta" id="activitySpan"></span>
+    </div>
+    <div class="approach-box gate-box">
+      <div class="stats-band" id="statsBand"></div>
+      <div class="approach-gate">
+        <div class="approach-gate-head">
+          <span class="approach-gate-title">What happens to the changes people send in</span>
+          <span class="approach-gate-hw" id="approachGateTotal"></span>
+        </div>
+        <div class="approach-bar" id="approachBar" role="img" aria-label="Breakdown of submitted changes">
+          <div class="approach-bar-track" id="approachBarTrack"></div>
+        </div>
+        <div class="approach-stats" id="approachStats"></div>
+      </div>
+    </div>
+    <details class="more-details" id="moreNumbers">
+      <summary>More numbers</summary>
+      <div class="activity-grid">
+        <div class="panel">
+          <div class="panel-head">
+            <span class="panel-title" id="chartTitle">Changes sent in, per hour</span>
+            <span class="panel-readout" id="chartReadout"></span>
+          </div>
+          <div class="chart-frame">
+            <div class="chart-yaxis" id="chartYAxis" aria-hidden="true"></div>
+            <div class="chart-plot" id="chartPlot" role="group" aria-label="Changes sent in over time"></div>
+            <div class="chart-xaxis" id="chartXAxis"></div>
+          </div>
+          <div class="chart-legend">
+            <span class="dot-lbl"><span class="dot-sq acc" aria-hidden="true"></span>Accepted</span>
+            <span class="dot-lbl"><span class="dot-sq wait" aria-hidden="true"></span>Waiting for review</span>
+            <span class="dot-lbl"><span class="dot-sq closed" aria-hidden="true"></span>Closed</span>
+            <span class="dot-lbl"><span class="dot-sq now" aria-hidden="true"></span>Latest</span>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-head">
+            <span class="panel-title">Where work is going</span>
+            <span class="panel-readout">Click an area to see it in the chart</span>
+          </div>
+          <ul class="area-list" id="areaList"></ul>
+        </div>
+      </div>
+    </details>
+  </section>
+
   <section class="wrap reveal ambient-scope" id="approachSection" aria-labelledby="approachHeading">
     <div class="sec-head">
       <h2 id="approachHeading">How this port is built</h2>
-      <span class="sec-meta" id="approachMeta">Native PC port, no emulator</span>
     </div>
-    <p class="sec-lead">The team chose a native PC port instead of an emulator, and the main build has to keep working on many different PCs. That makes the start slower, and changes take longer to land because each one is tested and reviewed first.</p>
+    <p class="sec-lead">The console uses the same kind of processor as a PC, so the game's own code runs directly on yours, with no emulator in between. What Leonardo rebuilds is everything around that code:</p>
     <div class="approach-box">
       <div class="arch-panel">
         <div class="arch-head">
           <h3 class="arch-title">Native, not emulated</h3>
-          <span class="arch-tag">Built locally from your own copy</span>
+          <span class="arch-tag">Built on your PC from your own copy</span>
         </div>
-        <p class="arch-lead">The console uses the same kind of processor as a PC, so the game's own code runs directly on your processor with no emulator in between. Everything around that code has to be rebuilt for PC first, which is why early progress takes longer, and it is the path the team chose.</p>
         <div class="arch-col-heads" aria-hidden="true">
           <span class="arch-col-lbl">Xbox Series console</span>
           <span class="arch-col-lbl center">What Leonardo does</span>
@@ -2856,7 +2889,7 @@
                   <span class="lane-pulse lane-pulse-direct second"></span>
                 </span>
               </div>
-              <span class="arch-pill-direct">Runs directly, no emulator</span>
+              <span class="arch-pill-direct">Runs as is</span>
             </div>
             <div class="arch-node arch-dst">
               <span class="arch-side-lbl">Your PC</span>
@@ -2890,15 +2923,15 @@
             <div class="arch-node arch-dst">
               <span class="arch-side-lbl">Your PC</span>
               <strong class="arch-node-title">Your graphics card</strong>
-              <span class="arch-node-sub">Runs natively through Vulkan</span>
+              <span class="arch-node-sub">Runs directly on your card</span>
             </div>
           </div>
 
           <div class="arch-lane arch-lane-step" role="listitem">
             <div class="arch-node arch-src">
               <span class="arch-side-lbl">Console</span>
-              <strong class="arch-node-title">Console system calls</strong>
-              <span class="arch-node-sub">Console services and graphics setup</span>
+              <strong class="arch-node-title">Console services</strong>
+              <span class="arch-node-sub">System services and graphics setup</span>
             </div>
             <div class="arch-bridge arch-bridge-split">
               <div class="arch-track-wrap" aria-hidden="true">
@@ -2908,7 +2941,7 @@
               </div>
               <div class="arch-mid arch-mid-amber">
                 <strong class="arch-mid-title">Swapped for PC versions</strong>
-                <span class="arch-mid-sub">Rebuilt as PC system layers</span>
+                <span class="arch-mid-sub">Rebuilt to work on PC</span>
               </div>
               <div class="arch-track-wrap amber has-arrow" aria-hidden="true">
                 <span class="arch-track">
@@ -2923,74 +2956,15 @@
             </div>
           </div>
         </div>
-        <p class="arch-note"><strong>Small exceptions:</strong> a few hardware-specific pieces are still emulated where PC parts differ from the console. Intel processors and older AMD chips emulate a handful of console-only processor instructions, and NVIDIA, Intel and Apple graphics cards emulate 64-wide GPU groups that AMD cards run directly.</p>
+        <details class="more-details inner">
+          <summary>More about how it works</summary>
+          <div class="more-body">
+            <p>Everything around the game's code has to be rebuilt for PC first, which is why early progress takes longer.</p>
+            <p>The official version has to keep working on many different PCs, so every change is reviewed before it is accepted. That is why some fixes wait for a while before they are added.</p>
+            <p><strong>Small exceptions:</strong> a few pieces are still imitated where PC parts differ from the console. Intel processors and older AMD processors imitate a handful of console-only processor instructions, and NVIDIA, Intel and Apple graphics cards imitate a way of grouping graphics work that AMD cards, like the console's, handle directly.</p>
+          </div>
+        </details>
       </div>
-
-      <div class="hw-panel">
-        <div class="hw-head">
-          <h3 class="hw-title">Tested on every kind of PC</h3>
-          <span class="hw-meta" id="approachHw"></span>
-        </div>
-        <p class="hw-lead">Contributors test on Windows, Linux and Mac across AMD, NVIDIA, Intel and Apple hardware, using both small graphics checks and full game runs. Here is how far each tracked setup gets on the main build today.</p>
-        <ul class="hw-grid" id="hwGrid"></ul>
-      </div>
-
-      <div class="approach-gate">
-        <div class="approach-gate-head">
-          <span class="approach-gate-title">What happens to the changes people send in</span>
-          <span class="approach-gate-hw" id="approachGateTotal"></span>
-        </div>
-        <div class="approach-bar" id="approachBar" role="img" aria-label="Breakdown of submitted changes">
-          <div class="approach-bar-track" id="approachBarTrack"></div>
-        </div>
-        <div class="approach-stats" id="approachStats"></div>
-      </div>
-    </div>
-  </section>
-
-  <section class="wrap reveal ambient-scope" id="activitySection" aria-labelledby="activityHeading">
-    <div class="sec-head">
-      <h2 id="activityHeading">Project activity</h2>
-      <span class="sec-meta" id="activitySpan"></span>
-    </div>
-    <div class="stats-band" id="statsBand"></div>
-    <div class="activity-grid">
-      <div class="panel">
-        <div class="panel-head">
-          <span class="panel-title" id="chartTitle">Changes per hour</span>
-          <span class="panel-readout" id="chartReadout"></span>
-        </div>
-        <div class="chart-frame">
-          <div class="chart-yaxis" id="chartYAxis" aria-hidden="true"></div>
-          <div class="chart-plot" id="chartPlot" role="group" aria-label="Changes sent in over time"></div>
-          <div class="chart-xaxis" id="chartXAxis"></div>
-        </div>
-        <div class="chart-legend">
-          <span class="dot-lbl"><span class="dot-sq acc" aria-hidden="true"></span>Accepted</span>
-          <span class="dot-lbl"><span class="dot-sq wait" aria-hidden="true"></span>Waiting for review</span>
-          <span class="dot-lbl"><span class="dot-sq closed" aria-hidden="true"></span>Closed</span>
-          <span class="dot-lbl"><span class="dot-sq now" aria-hidden="true"></span>Latest hour</span>
-        </div>
-      </div>
-
-      <div class="panel">
-        <div class="panel-head">
-          <span class="panel-title">Where work is going</span>
-          <span class="panel-readout">Click an area to filter</span>
-        </div>
-        <ul class="area-list" id="areaList"></ul>
-      </div>
-    </div>
-  </section>
-
-  <section class="wrap reveal ambient-scope" id="newsSection" aria-labelledby="newsHeading">
-    <div class="sec-head">
-      <h2 id="newsHeading">Recent updates</h2>
-      <div class="filter-bar" id="newsFilters" role="group" aria-label="Filter updates by type"></div>
-    </div>
-    <ul class="news-list" id="newsList"></ul>
-    <div class="more-wrap" id="moreWrap" hidden>
-      <button class="more-btn" id="moreBtn" type="button"></button>
     </div>
   </section>
 </main>
@@ -3010,7 +2984,7 @@
 <script>
 // Everything on the page comes from here. Update these numbers and redeploy.
 const DATA = {
- "updated": "2026-11-26T04:00:45Z",
+ "updated": "2026-11-26T04:31:25Z",
  "historyStarts": "2026-11-20",
  "leonardoOpened": "2026-11-23T23:33:19Z",
  "stops": [
@@ -3091,44 +3065,44 @@ const DATA = {
   [
    "Loading the game",
    "ok",
-   "The game's code loads and runs; loading now finishes, in about 7.5 minutes at best"
+   "The game starts and gets through loading, in about 7.5 minutes at best."
   ],
   [
    "Controls",
    "ok",
-   "Controller input gets through sign-in. In a Linux run the game reacted to stick input in the first mission"
+   "A controller works: it gets you through sign-in, and the game reacts to the stick in the first mission. With fixes waiting for review, a tester walked around the open world for 17 minutes, at 2 to 3 frames a second."
   ],
   [
-   "Shaders",
+   "Graphics programs",
    "ok",
-   "The menus and loading screens draw with converted shaders; on the newest version all but 12 of 29,278 convert"
+   "Menus and loading screens draw with the game's graphics programs, translated for PC graphics cards; in the official version all but 12 of 29,278 translate."
   ],
   [
    "Graphics",
    "wait",
-   "The game opens in its own window, but the 3D world does not show yet on the main version. With fixes waiting for review, an RX 9070 shows much of the opening city at 7 to 11 frames a second; people up close, roads and nearby buildings are still black"
+   "The game opens in its own window, but the 3D world does not show yet in the official version. With fixes waiting for review, one PC shows much of the opening city; people up close, roads and nearby buildings are still black."
   ],
   [
    "Sound and video",
    "ok",
-   "The intro movie plays. Sound works on some setups but not all; on Linux, a stock Wine setup lacks a Windows audio decoder, so the loading screen is silent"
+   "The intro movie plays and sound works on some PCs. On Linux, a fix accepted on 26 November adds the missing piece Wine needed for the game's sound; in a test run most of the sound played."
   ],
   [
    "Crashes",
    "wait",
-   "Many runs still crash or freeze after loading. The longest runs on the main version last about 15 minutes in the world; with fixes waiting for review, an RX 9070 has run up to 24 minutes"
+   "Many runs still crash or freeze after loading; in the official version the longest last about 15 minutes in the world. With fixes waiting for review, a 17-minute Linux run ended only because the tester stopped it."
   ]
  ],
  "numbers": [
   [
-   "724",
+   "726",
    "changes sent in",
-   "since Leonardo opened; 522 accepted, 43 waiting for review"
+   "since Leonardo opened; 528 accepted, 39 waiting for review"
   ],
   [
    "41",
    "people sending changes",
-   "in the first hours"
+   ""
   ],
   [
    "488",
@@ -3136,9 +3110,9 @@ const DATA = {
    "94 being worked on, 383 done"
   ],
   [
-   "12,188",
-   "changes in the history",
-   "since the port started on 20 November"
+   "12,193",
+   "code edits",
+   "since work began on 20 November"
   ],
   [
    "5 of 6",
@@ -3154,9 +3128,9 @@ const DATA = {
  "areas": {
   "RT": "Running the game",
   "D3D": "Graphics",
-  "SHADER": "Shaders",
+  "SHADER": "Graphics programs",
   "TOOL": "Tools",
-  "DOC": "Docs",
+  "DOC": "Guides and notes",
   "ASSET": "Game files"
  },
  "activity": [
@@ -6633,7 +6607,7 @@ const DATA = {
   [
    "2026-11-25T22:49:26Z",
    "TOOL",
-   "waiting"
+   "accepted"
   ],
   [
    "2026-11-25T22:54:31Z",
@@ -6648,7 +6622,7 @@ const DATA = {
   [
    "2026-11-25T23:07:01Z",
    "D3D",
-   "waiting"
+   "accepted"
   ],
   [
    "2026-11-25T23:07:05Z",
@@ -6713,7 +6687,7 @@ const DATA = {
   [
    "2026-11-26T01:25:21Z",
    "RT",
-   "waiting"
+   "accepted"
   ],
   [
    "2026-11-26T01:32:22Z",
@@ -6743,7 +6717,7 @@ const DATA = {
   [
    "2026-11-26T02:00:59Z",
    "RT",
-   "waiting"
+   "accepted"
   ],
   [
    "2026-11-26T02:09:52Z",
@@ -6773,15 +6747,45 @@ const DATA = {
   [
    "2026-11-26T03:47:57Z",
    "D3D",
-   "waiting"
+   "accepted"
   ],
   [
    "2026-11-26T03:50:57Z",
    "D3D",
    "waiting"
+  ],
+  [
+   "2026-11-26T04:04:54Z",
+   "RT",
+   "accepted"
+  ],
+  [
+   "2026-11-26T04:08:38Z",
+   "SHADER",
+   "waiting"
   ]
  ],
  "news": [
+  [
+   "2026-11-26T04:10:03Z",
+   "team",
+   "Linux with AMD graphics: the team found why the graphics card could not read the game's memory directly. With a small helper and other fixes that are not in the official version yet, the open world went from about 1.1 to about 1.8 frames a second, and up to 3 in a longer run."
+  ],
+  [
+   "2026-11-26T04:05:31Z",
+   "ok",
+   "Sound on Linux: a fix that adds the missing audio decoder is now accepted, and with it most of the game's sound plays. In the 17-minute test run it decoded more than a million pieces of audio."
+  ],
+  [
+   "2026-11-26T03:44:55Z",
+   "team",
+   "Linux test with AMD graphics and waiting fixes: the game stayed in the open world for 17 minutes while the tester walked around, at 2 to 3 frames a second. The tester ended the run; it did not crash. Before this, runs on that PC ended within 5 minutes."
+  ],
+  [
+   "2026-11-26T02:00:56Z",
+   "wait",
+   "A fix is waiting for review for the crash that ended long runs on Linux with AMD graphics after about two minutes."
+  ],
   [
    "2026-11-25T21:48:10Z",
    "wait",
@@ -6830,7 +6834,7 @@ const DATA = {
   [
    "2026-11-25T15:42:39Z",
    "team",
-   "Windows test on an RTX 5070 Ti laptop, comparing two recent main versions in 12 runs with the same input: every run stops showing new frames at the same point in the game (after about 2,600 to 3,400 frames), then crashes, hits the game's watchdog or freezes. The newer version is much smoother up to that point: its slowest frames take 58 to 82 thousandths of a second, against 200 to 612 on the older one"
+   "Windows test on an RTX 5070 Ti laptop: all 12 runs froze at the same point, and the newer of two recent main versions ran smoother up to there. Every run stopped showing new frames after about 2,600 to 3,400 frames, then crashed, hit the game's watchdog or froze. On the newer version the slowest frames took 58 to 82 thousandths of a second, against 200 to 612 on the older one"
   ],
   [
    "2026-11-25T15:11:54Z",
@@ -6910,12 +6914,12 @@ const DATA = {
   [
    "2026-11-25T12:33:05Z",
    "team",
-   "Sound on Linux, from a test on an RX 9060 XT under Wine: the intro movie and the first cutscene have sound, but the loading-screen music is silent, because the Windows audio decoder the game uses for it is missing from a stock Wine setup"
+   "Sound on Linux under Wine: the intro movie and first cutscene had sound, but the loading-screen music was silent (a fix for this was accepted on 26 November). It came from a test on an RX 9060 XT: the Windows audio decoder the game uses for that music is missing from a stock Wine setup"
   ],
   [
    "2026-11-25T12:30:06Z",
    "team",
-   "Linux test on an RX 9060 XT under Wine, with three waiting changes on top of the main version: the game went through the menus and the story loading screen into the opening credits about 4 minutes in, where the credit text draws over a black picture at about 1 frame a second, and about 9 minutes in a graphics card fault ended the run (a 2-minute run faulted the same way and an 80-second run hung); the cause of the fault is not found yet"
+   "Linux test with three waiting fixes: the game reached the opening credits, then a graphics card fault ended the run after about 9 minutes. Linux test on an RX 9060 XT under Wine, with three waiting changes on top of the main version: the game went through the menus and the story loading screen into the opening credits about 4 minutes in, where the credit text draws over a black picture at about 1 frame a second, and about 9 minutes in a graphics card fault ended the run (a 2-minute run faulted the same way and an 80-second run hung); the cause of the fault is not found yet"
   ],
   [
    "2026-11-25T12:19:44Z",
@@ -6930,7 +6934,7 @@ const DATA = {
   [
    "2026-11-25T11:59:53Z",
    "team",
-   "Windows test on an RTX 4060 laptop with the accepted, off-by-default setting that checks the addresses graphics programs read: with mesh and compute programs checked, one run went more than 6 minutes past the title screen with no graphics card loss, and the pause menu, settings and checkpoint menu worked, but the world stayed black; with the setting off, or checking only mesh programs, the graphics card was lost (one run each, and the first start took 8 minutes to rebuild graphics programs)"
+   "Windows test on an RTX 4060 laptop with an accepted safety setting on: one run went more than 6 minutes past the title screen, the pause and settings menus worked, but the world stayed black. Windows test on an RTX 4060 laptop with the accepted, off-by-default setting that checks the addresses graphics programs read: with mesh and compute programs checked, one run went more than 6 minutes past the title screen with no graphics card loss, and the pause menu, settings and checkpoint menu worked, but the world stayed black; with the setting off, or checking only mesh programs, the graphics card was lost (one run each, and the first start took 8 minutes to rebuild graphics programs)"
   ],
   [
    "2026-11-25T11:45:16Z",
@@ -7402,7 +7406,8 @@ const DATA = {
    "team",
    "Leonardo opens and the first change comes in"
   ]
- ]
+ ],
+ "heroCaveat": "though the 3D picture does not draw yet"
 };
 
 
@@ -7540,13 +7545,21 @@ const DATA = {
   const summaryEl = $("verdictSummary");
   if (done > 0) {
     const doneName = stops[done - 1];
-    summaryEl.append("On ", el("strong", "", DATA.bestOn), ", the main build reaches ", el("span", "hl-rose", doneName), ".");
+    // Count the tested setups that reach the official version's stop, so NVIDIA or Linux owners see their PC too.
+    const tested = (DATA.platforms || []).filter(p => p[2] != null);
+    const atStop = tested.filter(p => p[2] >= done).length;
+    if (atStop > 1) {
+      summaryEl.append("On ", el("strong", "", atStop + " of the " + tested.length + " PC setups tested"), ", the official version reaches ", el("span", "hl-rose", doneName));
+    } else {
+      summaryEl.append("On ", el("strong", "", DATA.bestOn), ", the official version reaches ", el("span", "hl-rose", doneName));
+    }
+    summaryEl.append(DATA.heroCaveat ? ", " + DATA.heroCaveat + "." : ".");
     if (withFixes > done) {
       const fixName = stops[withFixes - 1];
       summaryEl.append(" Fixes waiting for review get it to ", el("span", "hl-amber", fixName), ".");
     }
   } else {
-    summaryEl.textContent = "No stops have been reached in the main build yet.";
+    summaryEl.textContent = "The official version has not reached any stop yet.";
   }
 
   /* Percent = PortWatch VI's scoring model, so the two numbers can be compared.
@@ -7585,8 +7598,9 @@ const DATA = {
   ratioEl.textContent = "";
   ratioEl.appendChild(ratioNumNode);
   ratioEl.appendChild(el("span", "", "%"));
-  $("stepCaption").textContent = "Scored on the " + ((DATA.score && DATA.score.model) || "PortWatch VI") + " scale";
-  $("stepScale").textContent = "10% when the game's code runs, 20% first frame, 30% menus, 40% in the world, 50% playable, the rest for how well it plays.";
+  const scaleName = (DATA.score && DATA.score.model) || "PortWatch VI";
+  $("stepCaption").textContent = "Progress score";
+  $("stepScale").textContent = "Scored the way the " + scaleName + " tracker scores ports: getting in and moving the character is worth 50%; the other 50% is how well it runs, and that has barely started.";
   $("meterDone").style.width = pct + "%";
   $("meterWait").style.width = "0";
   const meter = $("stepMeter");
@@ -7597,7 +7611,7 @@ const DATA = {
     meter.appendChild(tick);
   });
   meter.setAttribute("aria-valuenow", String(pct));
-  meter.setAttribute("aria-label", pct.toFixed(1) + "% on the PortWatch VI scale");
+  meter.setAttribute("aria-label", "Progress score: " + pct.toFixed(1) + "%");
 
   /* Subtle 1px top sunset frontier edge proportional to frontier stop position */
   if (N > 0) {
@@ -7632,9 +7646,9 @@ const DATA = {
     li.appendChild(el("span", "stop-name", name));
 
     if (isCurrent) {
-      li.appendChild(el("span", "stop-flag main", "Main build"));
+      li.appendChild(el("span", "stop-flag main", "Official version"));
     } else if (isWaiting && num === withFixes) {
-      li.appendChild(el("span", "stop-flag wait", "Waiting fixes"));
+      li.appendChild(el("span", "stop-flag wait", "With waiting fixes"));
     } else if (isGoal && !isReached && !isWaiting) {
       li.appendChild(el("span", "stop-flag goal", "Goal"));
     }
@@ -7749,10 +7763,8 @@ const DATA = {
 
   /* Honest-progress rule */
   const ruleEl = $("honestRule");
-  ruleEl.append(el("strong", "", "How stops count: "), "a stop counts once someone has reached it and reported it.");
-  if (done > 0 && done < N) {
-    ruleEl.append(" Nothing accepted into the main version goes beyond the \"", lower(stops[done - 1]), "\" stop yet.");
-  }
+  ruleEl.append(el("strong", "", "How stops count: "), "a stop counts once someone has reached it and reported it. The official version is what everyone gets today; fixes waiting for review are being tested by contributors and are not in it yet.");
+
 
   /* ---------- PC Compatibility Matrix ---------- */
   const platforms = DATA.platforms || [];
@@ -7766,6 +7778,7 @@ const DATA = {
     ticksEl.appendChild(t);
   }
 
+  $("legendWait").hidden = !platforms.some(p => p[2] != null && p[3] != null && p[3] > p[2]);
   const pcList = $("pcList");
   const inspectEl = $("cellInspect");
   const defaultInspect = "";
@@ -7797,7 +7810,7 @@ const DATA = {
         let stateLabel = "not reached";
         if (i <= reachedStop) {
           state = "done";
-          stateLabel = "main build";
+          stateLabel = "official version";
         } else if (i <= maxFix) {
           state = "wait";
           stateLabel = "with waiting fixes";
@@ -7819,7 +7832,7 @@ const DATA = {
       mainLine.appendChild(el("span", "step-idx", reachedStop + "/" + N));
       st.appendChild(mainLine);
       if (maxFix > reachedStop) {
-        st.appendChild(el("span", "pc-status-wait", "Waiting fixes: " + lower(stops[maxFix - 1]) + " (" + maxFix + "/" + N + ")"));
+        st.appendChild(el("span", "pc-status-wait", "With waiting fixes: " + lower(stops[maxFix - 1]) + " (" + maxFix + "/" + N + ")"));
       }
       li.appendChild(st);
     }
@@ -7841,7 +7854,6 @@ const DATA = {
     titleSpan.appendChild(el("span", "state-mark " + kind));
     titleSpan.append(title);
     head.appendChild(titleSpan);
-    head.appendChild(el("span", "parts-col-count", items.length + " of " + parts.length));
     col.appendChild(head);
 
     const ul = el("ul", "part-list");
@@ -7855,7 +7867,7 @@ const DATA = {
     partsGrid.appendChild(col);
   }
 
-  renderPartColumn("Working in main build", "ok", okParts);
+  renderPartColumn("Working in the official version", "ok", okParts);
   renderPartColumn("Fixes waiting for review", "wait", waitParts);
   if (!okParts.length || !waitParts.length) {
     partsGrid.style.gridTemplateColumns = "1fr";
@@ -7871,50 +7883,7 @@ const DATA = {
     strip.append(el("span", "baseline-val", numFiles[0]), textWrap);
   }
 
-  /* ---------- How this port is built (Live hardware coverage + real-data review gate) ---------- */
-  const atBest = done > 0 ? platforms.filter(p => p[2] != null && p[2] >= done).length : 0;
-  if (atBest > 0) {
-    $("approachHw").textContent = testedCount + " of " + platforms.length + " setups tested, " + atBest + " at stop " + done + "/" + N;
-  } else {
-    $("approachHw").textContent = testedCount + " of " + platforms.length + " setups tested";
-  }
-
-  const hwGrid = $("hwGrid");
-  platforms.forEach(([name, detail, reachedStop, fixStop]) => {
-    const untested = reachedStop == null;
-    const li = el("li", "hw-card" + (untested ? " untested" : ""));
-
-    const top = el("div", "hw-card-top");
-    top.appendChild(el("span", "hw-card-name", name));
-    top.appendChild(el("span", "hw-card-stop", untested ? "Not tested" : (reachedStop + "/" + N)));
-    li.appendChild(top);
-
-    if (detail) li.appendChild(el("span", "hw-card-detail", detail));
-
-    const pips = el("div", "hw-pips");
-    pips.setAttribute("aria-hidden", "true");
-    const maxFix = !untested && fixStop != null ? fixStop : reachedStop;
-    for (let i = 1; i <= N; i++) {
-      let state = "";
-      if (!untested && i <= reachedStop) state = " done";
-      else if (!untested && i <= maxFix) state = " wait";
-      pips.appendChild(el("span", "hw-pip" + state));
-    }
-    li.appendChild(pips);
-
-    const statusEl = el("div", "hw-card-status");
-    if (untested) {
-      statusEl.textContent = "No full game runs yet";
-    } else {
-      statusEl.append(el("strong", "", stops[reachedStop - 1]));
-      if (maxFix > reachedStop) {
-        statusEl.append(" · ", el("span", "hw-wait-note", "waiting fixes: " + lower(stops[maxFix - 1])));
-      }
-    }
-    li.appendChild(statusEl);
-    hwGrid.appendChild(li);
-  });
-
+  /* ---------- What happens to the changes people send in (in Project activity) ---------- */
   const activity = DATA.activity || [];
   const areas = DATA.areas || {};
   const gateCounts = { accepted: 0, waiting: 0, closed: 0 };
@@ -7927,7 +7896,7 @@ const DATA = {
   const approachCounters = [];
 
   if (gateTotal > 0) {
-    $("approachGateTotal").textContent = gateTotal.toLocaleString("en-US") + " changes sent in";
+    // the total is the first number right above, so the bar does not repeat it
 
     const barEl = $("approachBar");
     const trackEl = $("approachBarTrack");
@@ -7944,7 +7913,7 @@ const DATA = {
     );
 
     const segDefs = [
-      ["acc", gateCounts.accepted, "accepted in main", accPct],
+      ["acc", gateCounts.accepted, "accepted", accPct],
       ["wait", gateCounts.waiting, "waiting for review", waitPct],
       ["closed", gateCounts.closed, "closed or replaced", closedPct]
     ];
@@ -7974,7 +7943,8 @@ const DATA = {
   const coreNumbers = (DATA.numbers || []).slice(0, 4);
   const statsBand = $("statsBand");
   const statCounters = [];
-  coreNumbers.forEach(([val, lbl, sub]) => {
+  coreNumbers.forEach(([val, lbl, sub], numIdx) => {
+    if (numIdx === 0) sub = "";  // the bar right below shows accepted and waiting
     const cell = el("div", "stat-cell");
     const numEl = el("div", "stat-num", val);
     const m = String(val).match(/^([\d,]+)(.*)$/);
@@ -7996,7 +7966,7 @@ const DATA = {
     statsBand.appendChild(cell);
   });
 
-  $("activitySpan").textContent = "Since Leonardo opened on " + longDate(DATA.leonardoOpened);
+  $("activitySpan").textContent = "Since the project went public on " + longDate(DATA.leonardoOpened);
 
   /* Adaptive bucketing: hourly up to 48h, 6h up to 10d, daily beyond */
   const H = 3600000;
@@ -8004,10 +7974,10 @@ const DATA = {
   const tEnd = toMs(DATA.updated);
   const spanHours = Math.max(1, (tEnd - tStart) / H);
   let stepMs = H;
-  let bucketWord = "hour";
+  let bucketWord = "one hour";
   if (spanHours > 240) {
     stepMs = 24 * H;
-    bucketWord = "day";
+    bucketWord = "one day";
   } else if (spanHours > 48) {
     stepMs = 6 * H;
     bucketWord = "6 hours";
@@ -8062,7 +8032,7 @@ const DATA = {
       const areaTotal = bins.reduce((sum, b) => sum + b.total, 0);
       readout.append(el("span", "", (areas[selectedArea] || selectedArea) + ": " + areaTotal));
     } else {
-      readout.append(el("span", "", "Peak: " + peak + " in one " + bucketWord));
+      readout.append(el("span", "", "Peak: " + peak + " in " + bucketWord));
     }
 
     if (selectedArea) {
@@ -8083,7 +8053,7 @@ const DATA = {
     const peak = Math.max(1, ...bins.map(b => b.total));
     const mid = Math.round(peak / 2);
 
-    $("chartTitle").textContent = stepMs === H ? "Changes per hour" : (stepMs >= 24 * H ? "Changes per day" : "Changes per 6 hours");
+    $("chartTitle").textContent = "Changes sent in, " + (stepMs === H ? "per hour" : (stepMs >= 24 * H ? "per day" : "per 6 hours"));
 
     const yAxis = $("chartYAxis");
     yAxis.innerHTML = "";
@@ -8155,7 +8125,7 @@ const DATA = {
 
     const xAxis = $("chartXAxis");
     xAxis.innerHTML = "";
-    xAxis.appendChild(el("span", "", formatBucketLabel(bucketStarts[0])));
+    xAxis.appendChild(el("span", "", shortDate(DATA.leonardoOpened) + ", " + clock(DATA.leonardoOpened)));
     if (bucketStarts.length >= 6) {
       const midTs = bucketStarts[Math.floor((bucketStarts.length - 1) / 2)];
       xAxis.appendChild(el("span", "", clock(new Date(midTs).toISOString())));
@@ -8195,7 +8165,7 @@ const DATA = {
     else row.closed++;
     row.total++;
   });
-  const sortedAreas = Object.values(areaTotals).sort((a, b) => b.total - a.total);
+  const sortedAreas = Object.values(areaTotals).filter(a => a.total >= 5).sort((a, b) => b.total - a.total);
   const maxArea = Math.max(1, ...sortedAreas.map(a => a.total));
 
   let areasEntered = skipEntrances;
@@ -8259,18 +8229,41 @@ const DATA = {
   const KIND_LABEL = {
     ok: "Accepted",
     wait: "Waiting for review",
-    team: "Project news"
+    team: "Tests and news"
   };
-  let newsFilter = "all";
+  // Visitors see test runs and project news first; "Everything" adds every single code change.
+  let newsFilter = news.some(item => item[1] === "team") ? "team" : "all";
   let showAllNews = false;
-  const INITIAL_NEWS = 7;
+  const INITIAL_NEWS = 5;
+  const NEWS_MAX = 160;
 
   const filterDefs = [
-    ["all", "All"],
+    ["team", "Tests and news"],
     ["wait", "Waiting for review"],
     ["ok", "Accepted"],
-    ["team", "Project news"]
+    ["all", "Everything"]
   ];
+
+  // Older entries were written for contributors; say "official version" where they say "main".
+  function plainWords(text) {
+    return text
+      .replace(/\bMain now\b/g, "The official version now")
+      .replace(/\bmain (version|build)s\b/g, "official versions")
+      .replace(/\bthe main (version|build)\b/g, "the official version")
+      .replace(/\bnewest main version\b/g, "newest official version")
+      .replace(/\bon main\b/g, "in the official version");
+  }
+
+  // One short sentence on the page: cut at the first sentence end, then at about 160 characters.
+  function shortNews(text) {
+    const m = text.match(/^.*?[.!?](?=\s+[A-Z(]|\s*$)/);
+    const first = m ? m[0] : text;
+    if (first.length <= NEWS_MAX) return first;
+    const cut = first.slice(0, NEWS_MAX - 1);
+    let at = Math.max(cut.lastIndexOf(", "), cut.lastIndexOf("; "), cut.lastIndexOf(": "));
+    if (at < 80) at = cut.lastIndexOf(" ");
+    return first.slice(0, at).replace(/[,;:]$/, "") + "…";
+  }
 
   function renderNewsFilters() {
     const bar = $("newsFilters");
@@ -8278,7 +8271,7 @@ const DATA = {
     filterDefs.forEach(([key, label]) => {
       const count = key === "all" ? news.length : news.filter(item => item[1] === key).length;
       if (key !== "all" && count === 0) return;
-      const btn = el("button", "filter-pill", label + " (" + count + ")");
+      const btn = el("button", "filter-pill", label);
       btn.type = "button";
       btn.setAttribute("aria-pressed", String(newsFilter === key));
       btn.addEventListener("click", () => {
@@ -8297,9 +8290,10 @@ const DATA = {
     const filtered = newsFilter === "all" ? news : news.filter(item => item[1] === newsFilter);
     const visible = showAllNews ? filtered : filtered.slice(0, INITIAL_NEWS);
 
-    const newestEntry = news.length > 0 ? news[0] : null;
+    const newestEntry = filtered.length > 0 ? filtered[0] : null;
     visible.forEach((entry, idx) => {
-      const [iso, kind, text] = entry;
+      const [iso, kind, rawText] = entry;
+      const text = plainWords(rawText);
       const isNewest = entry === newestEntry;
       const li = el("li", "news-row" + (isNewest ? " is-latest" : "") + (animateRows && !paused && !prefersReduced ? " news-enter" : ""));
       if (animateRows && !paused && !prefersReduced) {
@@ -8325,7 +8319,22 @@ const DATA = {
         badge.append("Latest");
         textSpan.appendChild(badge);
       }
-      textSpan.append(text);
+      const short = shortNews(text);
+      const body = el("span", "news-body", short);
+      textSpan.appendChild(body);
+      if (short !== text) {
+        textSpan.title = text;
+        const more = el("button", "news-more", "More");
+        more.type = "button";
+        more.setAttribute("aria-expanded", "false");
+        more.addEventListener("click", () => {
+          const open = more.getAttribute("aria-expanded") !== "true";
+          body.textContent = open ? text : short;
+          more.textContent = open ? "Less" : "More";
+          more.setAttribute("aria-expanded", String(open));
+        });
+        textSpan.append(" ", more);
+      }
       li.appendChild(textSpan);
       list.appendChild(li);
     });
@@ -8394,7 +8403,7 @@ const DATA = {
         secObserver.unobserve(sec);
         if (sec.id === "pcSection") {
           setTimeout(() => sec.classList.add("cells-ready"), 750);
-        } else if (sec.id === "approachSection") {
+        } else if (sec.id === "activitySection") {
           triggerApproachCounts();
         }
       });
