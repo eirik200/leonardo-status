@@ -1,0 +1,2951 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Leonardo: contributors</title>
+<meta name="description" content="Current progress of Leonardo, a community project getting the console version of the game running on PC.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700;12..96,800&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #121315;
+    --surface: #18191c;
+    --surface-2: #1e1f23;
+    --line: #2a2b30;
+    --line-strong: #3b3c42;
+    --ink: #ededeb;
+    --muted: #a4a5ab;
+    --dim: #7c7d84;
+
+    /* Semantic dusk-sunset accents: used for state, never as surface decoration */
+    --rose: #d4577f;
+    --rose-text: #e387a5;
+    --rose-bg: rgba(212, 87, 127, 0.11);
+    --sunset-orange: #d07a55;
+    --amber: #d6a14e;
+    --amber-fill: rgba(214, 161, 78, 0.7);
+    --amber-text: #e2b468;
+    --amber-bg: rgba(214, 161, 78, 0.11);
+    --teal:#56ada3;
+    --teal-bg: rgba(86, 173, 163, 0.1);
+    --closed: #5f6066;
+
+    --display: "Bricolage Grotesque", system-ui, -apple-system, sans-serif;
+    --body: "DM Sans", system-ui, -apple-system, sans-serif;
+    --mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
+
+    --gutter: clamp(18px, 4vw, 48px);
+    --radius: 8px;
+  }
+
+  * { box-sizing: border-box; }
+  html {
+    background: var(--bg);
+    color: var(--ink);
+    -webkit-text-size-adjust: 100%;
+  }
+  body {
+    margin: 0;
+    min-height: 100vh;
+    background: var(--bg);
+    color: var(--ink);
+    font: 400 16px/1.55 var(--body);
+    font-variant-numeric: tabular-nums;
+    overflow-x: clip;
+  }
+
+  /* Crisp 2px sunset horizon along the top viewport edge */
+  .horizon {
+    height: 2px;
+    width: 100%;
+    background: transparent;
+  }
+
+  .wrap {
+    width: 100%;
+    max-width: 1160px;
+    margin: 0 auto;
+    padding-left: var(--gutter);
+    padding-right: var(--gutter);
+  }
+
+  p, h1, h2, h3, ul, ol { margin: 0; }
+  button { font: inherit; color: inherit; }
+  :focus-visible { outline: 2px solid var(--teal); outline-offset: 2px; }
+
+  .paused *, .paused *::before, .paused *::after {
+    animation: none !important;
+    animation-play-state: paused !important;
+    transition: none !important;
+  }
+  .paused .ladder-pulse,
+  .paused .step-meter-done::after,
+  .paused .stop.current .stop-dot::before,
+  .paused .stop.current .stop-dot::after,
+  .paused .live-dot::after,
+  .paused .lane-pulse {
+    animation: none !important;
+    opacity: 0 !important;
+  }
+  html.tab-hidden *, html.tab-hidden *::before, html.tab-hidden *::after,
+  .off-screen, .off-screen *, .off-screen *::before, .off-screen *::after {
+    animation-play-state: paused !important;
+  }
+
+  /* ---------- Motion primitives (gated on .anim-ready, off on reduced motion / paused) ---------- */
+  html.anim-ready .reveal {
+    opacity: 0;
+    transform: translateY(14px);
+    transition: opacity 0.56s cubic-bezier(0.22, 1, 0.36, 1), transform 0.56s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  html.anim-ready .reveal.in-view {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  html.anim-ready .step-meter-done,
+  html.anim-ready .ladder-top-edge-fill {
+    transform-origin: left center;
+    transform: scaleX(0);
+    transition: transform 0.85s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  html.anim-ready.hero-entered .step-meter-done,
+  html.anim-ready.hero-entered .ladder-top-edge-fill {
+    transform: scaleX(1);
+  }
+  html.anim-ready .ladder-seg-done {
+    transform-origin: left center;
+    transform: scaleX(0);
+    transition: transform 0.82s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  html.anim-ready .ladder-seg-wait {
+    transform-origin: left center;
+    transform: scaleX(0);
+    transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1) 0.45s;
+  }
+  html.anim-ready.hero-entered .ladder-seg-done,
+  html.anim-ready.hero-entered .ladder-seg-wait {
+    transform: scaleX(1);
+  }
+  html.anim-ready .stop.reached .stop-node-slot,
+  html.anim-ready .stop.waiting .stop-node-slot {
+    opacity: 0;
+    transform: scale(0.55);
+    transition: opacity 0.34s cubic-bezier(0.22, 1, 0.36, 1) var(--stop-delay, 0ms),
+                transform 0.38s cubic-bezier(0.22, 1, 0.36, 1) var(--stop-delay, 0ms);
+  }
+  html.anim-ready.hero-entered .stop.reached .stop-node-slot,
+  html.anim-ready.hero-entered .stop.waiting .stop-node-slot {
+    opacity: 1;
+    transform: scale(1);
+  }
+  html.anim-ready .ladder-pulse-clip {
+    opacity: 0;
+    transition: opacity 0.65s ease 0.9s;
+  }
+  html.anim-ready.hero-entered .ladder-pulse-clip {
+    opacity: 1;
+  }
+  html.anim-ready #pcSection:not(.in-view) .cell.done,
+  html.anim-ready #pcSection:not(.in-view) .cell.wait {
+    opacity: 0;
+    transform: scaleX(0.3);
+    transform-origin: left center;
+  }
+  html.anim-ready #pcSection.in-view:not(.cells-ready) .cell.done,
+  html.anim-ready #pcSection.in-view:not(.cells-ready) .cell.wait {
+    opacity: 1;
+    transform: scaleX(1);
+    transform-origin: left center;
+    transition: opacity 0.3s cubic-bezier(0.22, 1, 0.36, 1) var(--cell-delay, 0ms),
+                transform 0.34s cubic-bezier(0.22, 1, 0.36, 1) var(--cell-delay, 0ms);
+  }
+  html.anim-ready .area-bar-inner {
+    transform-origin: left center;
+    transform: scaleX(0);
+    transition: transform 0.62s cubic-bezier(0.22, 1, 0.36, 1) var(--area-delay, 0ms);
+  }
+  html.anim-ready #areaList.bars-in .area-bar-inner {
+    transform: scaleX(1);
+  }
+  @keyframes rowFadeIn {
+    from { opacity: 0; transform: translateY(6px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  html.anim-ready .news-row.news-enter {
+    animation: rowFadeIn 0.24s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+
+  /* ---------- Top utility bar ---------- */
+  .topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px 20px;
+    flex-wrap: wrap;
+    padding-top: 20px;
+    padding-bottom: 18px;
+    border-bottom: 1px solid var(--line);
+  }
+  .brand {
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+    min-width: 0;
+  }
+  .brand-name {
+    font-family: var(--display);
+    font-weight: 800;
+    font-size: 20px;
+    letter-spacing: -0.02em;
+    color: var(--ink);
+  }
+  .brand-logo {
+    display: block;
+    height: 64px;
+    width: auto;
+  }
+  .brand:has(.brand-logo) { align-items: center; }
+  .brand-tag {
+    font-size: 14px;
+    color: var(--muted);
+  }
+  .topbar-meta {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    flex-wrap: wrap;
+  }
+  .updated-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-family: var(--mono);
+    font-size: 12.5px;
+    color: var(--muted);
+  }
+  .live-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--teal);
+    position: relative;
+    flex: none;
+    animation: liveCore 3.6s ease-in-out infinite;
+  }
+  .live-dot::after {
+    content: "";
+    position: absolute;
+    inset: -3px;
+    border-radius: 50%;
+    border: 1.5px solid var(--teal);
+    opacity: 0;
+    animation: livePing 3.6s cubic-bezier(0.2, 0.65, 0.35, 1) infinite;
+    will-change: transform, opacity;
+  }
+  @keyframes liveCore {
+    0%, 100% { opacity: 0.72; }
+    50% { opacity: 1; }
+  }
+  @keyframes livePing {
+    0% { transform: scale(0.75); opacity: 0.55; }
+    65% { transform: scale(2.15); opacity: 0; }
+    100% { transform: scale(2.15); opacity: 0; }
+  }
+  .motion-btn {
+    background: var(--surface);
+    border: 1px solid var(--line-strong);
+    border-radius: 6px;
+    padding: 6px 11px;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--ink);
+    cursor: pointer;
+    transition: border-color 0.15s ease, background-color 0.15s ease, color 0.15s ease, transform 0.14s ease;
+  }
+  .motion-btn:hover {
+    border-color: var(--muted);
+    background: var(--surface-2);
+    transform: translateY(-1px);
+  }
+  .motion-btn:active {
+    transform: translateY(0) scale(0.985);
+  }
+  .motion-btn[aria-pressed="true"] {
+    border-color: var(--teal);
+    color: var(--teal);
+  }
+
+  /* ---------- Hero: Verdict + 8-Stop Stage Ladder ---------- */
+  .hero {
+    padding-top: clamp(30px, 4.8vw, 50px);
+    padding-bottom: 8px;
+  }
+  .hero-head {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 20px 44px;
+    align-items: end;
+    margin-bottom: 26px;
+  }
+  .verdict-kicker {
+    font-size: 14px;
+    color: var(--muted);
+    margin-bottom: 10px;
+  }
+  .verdict-title {
+    font-family: var(--display);
+    font-weight: 800;
+    font-size: clamp(36px, 5.2vw, 56px);
+    line-height: 1.03;
+    letter-spacing: -0.03em;
+    color: var(--ink);
+    margin-bottom: 14px;
+  }
+  .verdict-summary {
+    font-size: clamp(16px, 1.5vw, 18px);
+    line-height: 1.55;
+    color: var(--muted);
+    max-width: 58ch;
+  }
+  .verdict-summary strong {
+    color: var(--ink);
+    font-weight: 600;
+  }
+  .verdict-summary .hl-rose {
+    color: var(--rose-text);
+    font-weight: 600;
+  }
+  .verdict-summary .hl-amber {
+    color: var(--amber-text);
+    font-weight: 600;
+  }
+
+  .step-counter {
+    text-align: right;
+    padding-left: 32px;
+    padding-bottom: 4px;
+    border-left: 1px solid var(--line);
+  }
+  .step-ratio {
+    font-family: var(--display);
+    font-weight: 800;
+    font-size: clamp(46px, 5.5vw, 68px);
+    line-height: 0.92;
+    letter-spacing: -0.035em;
+    color: var(--rose);
+    white-space: nowrap;
+  }
+  .step-ratio span {
+    font-size: 0.44em;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    color: var(--muted);
+    margin-left: 0.14em;
+  }
+  .step-caption {
+    margin-top: 8px;
+    font-size: 14px;
+    color: var(--muted);
+  }
+  .step-meter {
+    display: flex;
+    width: 180px;
+    height: 6px;
+    margin: 12px 0 0 auto;
+    border-radius: 3px;
+    background: var(--surface-2);
+    box-shadow: inset 0 0 0 1px var(--line);
+    overflow: hidden;
+  }
+  .step-meter { position: relative; }
+  .step-meter-done {
+    background: var(--rose);
+    position: relative;
+    overflow: hidden;
+  }
+  .step-meter-done::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(90deg, transparent 22%, rgba(255, 255, 255, 0.34) 50%, transparent 78%);
+    transform: translateX(-100%);
+    animation: meterSweep 6.2s cubic-bezier(0.35, 0.05, 0.35, 1) infinite;
+    will-change: transform;
+  }
+  @keyframes meterSweep {
+    0% { transform: translateX(-110%); }
+    46% { transform: translateX(110%); }
+    100% { transform: translateX(110%); }
+  }
+  .step-tick {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 1px;
+    background: var(--bg, #000);
+    opacity: 0.7;
+  }
+  .step-scale {
+    max-width: 260px;
+    margin: 10px 0 0 auto;
+    font-size: 12.5px;
+    line-height: 1.45;
+    color: var(--muted);
+  }
+  .step-meter-wait { background: var(--amber-fill); }
+
+  /* Signature 8-stop stage ladder */
+  .ladder-card {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    overflow: hidden;
+    position: relative;
+  }
+  /* Razor-sharp 1px sunset frontier edge across the top of the ladder, aligned to progress */
+  .ladder-top-edge {
+    height: 1px;
+    width: 100%;
+    background: var(--line);
+    position: relative;
+  }
+  .ladder-top-edge-fill {
+    height: 100%;
+    background: var(--rose);
+  }
+
+  .ladder-body {
+    padding: 26px 20px 22px;
+  }
+  .ladder-rail-wrap {
+    position: relative;
+  }
+  .ladder-track {
+    position: absolute;
+    height: 3px;
+    background: var(--line-strong);
+    border-radius: 2px;
+    pointer-events: none;
+  }
+  .ladder-seg-done {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    background: var(--rose);
+    border-radius: 2px;
+  }
+  .ladder-seg-wait {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    overflow: hidden;
+    border-radius: 2px;
+  }
+  .ladder-seg-wait::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: -12px;
+    width: calc(100% + 12px);
+    background: repeating-linear-gradient(
+      90deg,
+      var(--amber) 0 7px,
+      rgba(214, 161, 78, 0.22) 7px 12px
+    );
+    animation: waitRailX 3.6s linear infinite;
+    will-change: transform;
+  }
+  @keyframes waitRailX {
+    from { transform: translateX(0); }
+    to { transform: translateX(12px); }
+  }
+  /* One calm, purposeful traveling signal clipped strictly inside the active 3px rail */
+  .ladder-pulse-clip {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    overflow: hidden;
+    border-radius: 2px;
+  }
+  .ladder-pulse {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    width: 72px;
+    background: linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.56) 52%, rgba(212, 87, 127, 0.52) 84%, transparent 100%);
+    animation: railSweep 5.2s cubic-bezier(0.35, 0.05, 0.35, 1) infinite;
+    will-change: transform, opacity;
+  }
+  @keyframes railSweep {
+    0% { transform: translateX(-72px); opacity: 0; }
+    10% { opacity: 1; }
+    68% { opacity: 0.92; }
+    82% { transform: translateX(var(--sweep-end, 360px)); opacity: 0; }
+    100% { transform: translateX(var(--sweep-end, 360px)); opacity: 0; }
+  }
+
+  .ladder-grid {
+    list-style: none;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(8, minmax(0, 1fr));
+    position: relative;
+    z-index: 1;
+  }
+  .stop {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: 0 5px;
+    position: relative;
+  }
+  .stop-num {
+    font-family: var(--mono);
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--dim);
+    height: 22px;
+    line-height: 22px;
+    margin-bottom: 4px;
+  }
+  .stop.reached .stop-num { color: var(--rose-text); }
+  .stop.waiting .stop-num { color: var(--amber-text); }
+
+  .stop-node-slot {
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 12px;
+    position: relative;
+  }
+  .stop-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: var(--surface);
+    border: 2px solid var(--line-strong);
+    position: relative;
+  }
+  .stop.reached .stop-dot {
+    background: var(--rose);
+    border-color: var(--rose);
+    box-shadow: 0 0 0 3px var(--surface);
+  }
+  .stop.current .stop-dot {
+    width: 15px;
+    height: 15px;
+    background: var(--rose);
+    border: 2.5px solid var(--ink);
+    box-shadow: 0 0 0 3px var(--surface);
+  }
+  .stop.current .stop-dot::before,
+  .stop.current .stop-dot::after {
+    content: "";
+    position: absolute;
+    inset: -4px;
+    border-radius: 50%;
+    border: 1.5px solid var(--rose);
+    pointer-events: none;
+    opacity: 0;
+    animation: stopRipple 3.8s cubic-bezier(0.2, 0.65, 0.35, 1) infinite;
+    will-change: transform, opacity;
+  }
+  .stop.current .stop-dot::after {
+    animation-delay: 1.9s;
+  }
+  @keyframes stopRipple {
+    0% { transform: scale(0.85); opacity: 0.56; }
+    72% { transform: scale(2.25); opacity: 0; }
+    100% { transform: scale(2.25); opacity: 0; }
+  }
+  .stop.waiting .stop-dot {
+    width: 15px;
+    height: 15px;
+    background: var(--surface);
+    border: 2.5px solid var(--amber);
+    box-shadow: 0 0 0 3px var(--surface);
+  }
+  .stop.waiting .stop-dot::after {
+    content: "";
+    position: absolute;
+    inset: 3px;
+    border-radius: 50%;
+    background: var(--amber);
+    animation: waitDotBreath 4.2s ease-in-out infinite;
+  }
+  @keyframes waitDotBreath {
+    0%, 100% { opacity: 0.55; transform: scale(0.86); }
+    50% { opacity: 1; transform: scale(1); }
+  }
+  .stop.goal .stop-dot {
+    width: 13px;
+    height: 13px;
+    border-radius: 3px;
+    transform: rotate(45deg);
+    border-color: var(--muted);
+    background: var(--surface);
+  }
+  .stop.goal.reached .stop-dot {
+    border-color: var(--rose);
+    background: var(--rose);
+  }
+
+  .stop-name {
+    font-size: 13.5px;
+    font-weight: 500;
+    line-height: 1.3;
+    color: var(--muted);
+    max-width: 14ch;
+  }
+  .stop.reached .stop-name,
+  .stop.waiting .stop-name {
+    color: var(--ink);
+    font-weight: 600;
+  }
+  .stop-flag {
+    margin-top: 8px;
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 500;
+    padding: 2px 7px;
+    border-radius: 4px;
+    white-space: nowrap;
+  }
+  .stop-flag.main {
+    color: var(--rose-text);
+    background: var(--rose-bg);
+    border: 1px solid rgba(212, 87, 127, 0.32);
+  }
+  .stop-flag.wait {
+    color: var(--amber-text);
+    background: var(--amber-bg);
+    border: 1px solid rgba(214, 161, 78, 0.32);
+  }
+  .stop-flag.goal {
+    color: var(--muted);
+    border: 1px solid var(--line-strong);
+  }
+
+  .honest-rule {
+    padding: 13px 20px;
+    border-top: 1px solid var(--line);
+    background: rgba(18, 19, 21, 0.38);
+    font-size: 14px;
+    color: var(--muted);
+    line-height: 1.5;
+  }
+  .honest-rule strong {
+    color: var(--ink);
+    font-weight: 600;
+  }
+
+  /* ---------- Shared section layout ---------- */
+  section {
+    padding-top: clamp(42px, 5.5vw, 64px);
+  }
+  .sec-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 10px 20px;
+    flex-wrap: wrap;
+    margin-bottom: 10px;
+  }
+  h2 {
+    font-family: var(--display);
+    font-weight: 700;
+    font-size: clamp(23px, 2.5vw, 30px);
+    line-height: 1.15;
+    letter-spacing: -0.02em;
+    color: var(--ink);
+  }
+  .sec-meta {
+    font-family: var(--mono);
+    font-size: 13px;
+    color: var(--muted);
+  }
+  .sec-lead {
+    font-size: 15px;
+    color: var(--muted);
+    max-width: 68ch;
+    margin-bottom: 18px;
+  }
+
+  /* ---------- PC Compatibility Matrix ---------- */
+  .matrix-box {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    overflow: hidden;
+  }
+  .matrix-head {
+    display: grid;
+    grid-template-columns: minmax(190px, 1.1fr) minmax(240px, 1.55fr) minmax(210px, 1.25fr);
+    gap: 16px;
+    padding: 12px 20px;
+    border-bottom: 1px solid var(--line);
+    background: rgba(30, 31, 35, 0.5);
+    align-items: center;
+  }
+  .matrix-head-lbl {
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--muted);
+    font-weight: 500;
+  }
+  .matrix-ticks {
+    display: grid;
+    grid-template-columns: repeat(8, minmax(0, 1fr));
+    gap: 5px;
+    text-align: center;
+    font-family: var(--mono);
+    font-size: 11.5px;
+    color: var(--muted);
+  }
+
+  .pc-list {
+    list-style: none;
+    padding: 0;
+  }
+  .pc-row {
+    display: grid;
+    grid-template-columns: minmax(190px, 1.1fr) minmax(240px, 1.55fr) minmax(210px, 1.25fr);
+    gap: 10px 16px;
+    padding: 15px 20px;
+    border-bottom: 1px solid var(--line);
+    align-items: center;
+    transition: background-color 0.14s ease;
+  }
+  .pc-row:last-child { border-bottom: 0; }
+  .pc-row:hover { background: var(--surface-2); }
+
+  .pc-name-wrap { min-width: 0; }
+  .pc-name {
+    font-weight: 700;
+    font-size: 16px;
+    color: var(--ink);
+    line-height: 1.25;
+  }
+  .pc-detail {
+    font-size: 13.5px;
+    color: var(--muted);
+    margin-top: 2px;
+  }
+
+  /* 8 discrete milestone cells */
+  .step-cells {
+    display: grid;
+    grid-template-columns: repeat(8, minmax(0, 1fr));
+    gap: 5px;
+  }
+  .cell {
+    height: 16px;
+    border-radius: 3px;
+    background: #1c1d21;
+    border: 1px solid #34353b;
+    transition: border-color 0.12s ease, transform 0.14s ease;
+  }
+  .cell.done {
+    background: var(--rose);
+    border-color: var(--rose);
+  }
+  .cell.wait {
+    position: relative;
+    overflow: hidden;
+    background: rgba(214, 161, 78, 0.16);
+    border-color: var(--amber);
+  }
+  .cell.wait::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: -12px;
+    width: calc(100% + 12px);
+    background: linear-gradient(
+      -45deg,
+      rgba(214, 161, 78, 0.88) 25%,
+      rgba(214, 161, 78, 0.22) 25%,
+      rgba(214, 161, 78, 0.22) 50%,
+      rgba(214, 161, 78, 0.88) 50%,
+      rgba(214, 161, 78, 0.88) 75%,
+      rgba(214, 161, 78, 0.22) 75%
+    );
+    background-size: 12px 12px;
+    animation: hatchShift 4.4s linear infinite;
+    will-change: transform;
+  }
+  @keyframes hatchShift {
+    from { transform: translateX(0); }
+    to { transform: translateX(12px); }
+  }
+  .cell:hover {
+    border-color: var(--ink);
+  }
+  .cell.done:hover,
+  .cell.wait:hover {
+    transform: scaleY(1.22);
+  }
+
+  .untested-track {
+    height: 22px;
+    border: 1px dashed var(--line-strong);
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--muted);
+  }
+
+  .pc-status {
+    font-size: 14.5px;
+    line-height: 1.35;
+  }
+  .pc-status-main {
+    color: var(--ink);
+    font-weight: 600;
+  }
+  .pc-status-main .step-idx {
+    font-family: var(--mono);
+    font-size: 12.5px;
+    color: var(--rose-text);
+    font-weight: 500;
+    margin-left: 6px;
+  }
+  .pc-status-wait {
+    display: block;
+    font-size: 13.5px;
+    color: var(--amber-text);
+    margin-top: 2px;
+  }
+  .pc-status-none {
+    color: var(--muted);
+    font-size: 14px;
+  }
+
+  .matrix-foot {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px 20px;
+    flex-wrap: wrap;
+    padding: 12px 20px;
+    border-top: 1px solid var(--line);
+    background: rgba(18, 19, 21, 0.35);
+    font-size: 13px;
+    color: var(--muted);
+  }
+  .legend {
+    display: flex;
+    align-items: center;
+    gap: 10px 18px;
+    flex-wrap: wrap;
+  }
+  .legend-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+  }
+  .swatch {
+    width: 14px;
+    height: 10px;
+    border-radius: 2px;
+    display: inline-block;
+    flex: none;
+  }
+  .swatch.done { background: var(--rose); }
+  .swatch.wait {
+    background: repeating-linear-gradient(-45deg, rgba(214, 161, 78, 0.88) 0 3px, rgba(214, 161, 78, 0.22) 3px 6px);
+    border: 1px solid var(--amber);
+  }
+  .swatch.ahead { background: #1c1d21; border: 1px solid #34353b; }
+  .cell-inspect {
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--teal);
+    min-height: 1.4em;
+  }
+
+  /* ---------- Subsystems (What works / Fix waiting) ---------- */
+  .parts-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 20px;
+  }
+  .parts-col {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    overflow: hidden;
+  }
+  .parts-col-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 13px 18px;
+    border-bottom: 1px solid var(--line);
+    background: rgba(30, 31, 35, 0.45);
+  }
+  .parts-col-title {
+    display: inline-flex;
+    align-items: center;
+    gap: 9px;
+    font-weight: 700;
+    font-size: 15px;
+    color: var(--ink);
+  }
+  .state-mark {
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    display: inline-block;
+    flex: none;
+  }
+  .state-mark.ok { background: var(--rose); }
+  .state-mark.wait {
+    background: transparent;
+    border: 2px solid var(--amber);
+    animation: waitMarkBreath 4.2s ease-in-out infinite;
+  }
+  @keyframes waitMarkBreath {
+    0%, 100% { opacity: 0.62; }
+    50% { opacity: 1; }
+  }
+  .parts-col-count {
+    font-family: var(--mono);
+    font-size: 12.5px;
+    color: var(--muted);
+  }
+
+  .part-list {
+    list-style: none;
+    padding: 0;
+  }
+  .part-item {
+    padding: 15px 18px;
+    border-bottom: 1px solid var(--line);
+  }
+  .part-item:last-child { border-bottom: 0; }
+  .part-name {
+    font-weight: 700;
+    font-size: 15.5px;
+    color: var(--ink);
+    margin-bottom: 4px;
+  }
+  .part-note {
+    font-size: 14.5px;
+    color: var(--muted);
+    line-height: 1.5;
+  }
+
+  .baseline-strip {
+    margin-top: 14px;
+    padding: 12px 18px;
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    background: rgba(24, 25, 28, 0.55);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+    font-size: 14.5px;
+    color: var(--muted);
+  }
+  .baseline-val {
+    font-family: var(--mono);
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--rose-text);
+    background: var(--rose-bg);
+    border: 1px solid rgba(212, 87, 127, 0.28);
+    border-radius: 4px;
+    padding: 2px 8px;
+    white-space: nowrap;
+  }
+  .baseline-text strong {
+    color: var(--ink);
+    font-weight: 600;
+  }
+
+  /* ---------- How this port is built (Native diagram + Live hardware + Review gate) ---------- */
+  .approach-box {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    overflow: hidden;
+  }
+
+  /* Part 1: Native, not emulated architecture diagram */
+  .arch-panel {
+    padding: 20px 22px 18px;
+    border-bottom: 1px solid var(--line);
+  }
+  .arch-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 8px 18px;
+    flex-wrap: wrap;
+    margin-bottom: 10px;
+  }
+  .arch-title {
+    font-family: var(--display);
+    font-weight: 700;
+    font-size: 19px;
+    letter-spacing: -0.015em;
+    color: var(--ink);
+  }
+  .arch-tag {
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--rose-text);
+    background: var(--rose-bg);
+    border: 1px solid rgba(212, 87, 127, 0.28);
+    border-radius: 4px;
+    padding: 2px 8px;
+    white-space: nowrap;
+  }
+  .arch-lead {
+    font-size: 14.5px;
+    color: var(--muted);
+    line-height: 1.55;
+    max-width: 78ch;
+    margin-bottom: 18px;
+  }
+  .arch-col-heads {
+    display: grid;
+    grid-template-columns: minmax(195px, 0.98fr) minmax(280px, 1.44fr) minmax(195px, 0.98fr);
+    gap: 14px;
+    margin-bottom: 10px;
+    padding: 0 2px;
+  }
+  .arch-col-lbl {
+    font-family: var(--mono);
+    font-size: 11.5px;
+    font-weight: 500;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--dim);
+  }
+  .arch-col-lbl.center { text-align: center; }
+  .arch-col-lbl.right { text-align: right; }
+
+  .arch-lanes {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .arch-lane {
+    display: grid;
+    grid-template-columns: minmax(195px, 0.98fr) minmax(280px, 1.44fr) minmax(195px, 0.98fr);
+    gap: 0;
+    align-items: center;
+    background: rgba(18, 19, 21, 0.42);
+    border: 1px solid var(--line);
+    border-radius: 7px;
+    padding: 12px 14px;
+  }
+  .arch-lane-direct {
+    border-color: rgba(212, 87, 127, 0.34);
+    background: linear-gradient(90deg, rgba(212, 87, 127, 0.06) 0%, rgba(18, 19, 21, 0.48) 28%, rgba(18, 19, 21, 0.48) 72%, rgba(212, 87, 127, 0.06) 100%);
+  }
+  .arch-node {
+    background: var(--surface);
+    border: 1px solid var(--line-strong);
+    border-radius: 6px;
+    padding: 10px 12px;
+    min-width: 0;
+  }
+  .arch-lane-direct .arch-node {
+    border-color: rgba(212, 87, 127, 0.36);
+  }
+  .arch-dst {
+    text-align: right;
+  }
+  .arch-side-lbl {
+    display: none;
+    font-family: var(--mono);
+    font-size: 10.5px;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--dim);
+    margin-bottom: 2px;
+  }
+  .arch-node-title {
+    display: block;
+    font-size: 14.5px;
+    font-weight: 700;
+    color: var(--ink);
+    line-height: 1.25;
+  }
+  .arch-node-sub {
+    display: block;
+    font-size: 12.5px;
+    color: var(--muted);
+    line-height: 1.35;
+    margin-top: 2px;
+  }
+
+  /* Bridge between Console and Your PC */
+  .arch-bridge {
+    min-width: 0;
+    padding: 0 2px;
+  }
+  .arch-bridge-direct {
+    display: flex;
+    flex-direction: column-reverse;
+    align-items: center;
+    gap: 8px;
+    padding: 0 10px;
+  }
+  .arch-pill-direct {
+    font-family: var(--mono);
+    font-size: 11.5px;
+    font-weight: 500;
+    color: var(--rose-text);
+    background: var(--rose-bg);
+    border: 1px solid rgba(212, 87, 127, 0.34);
+    border-radius: 4px;
+    padding: 3px 9px;
+    white-space: nowrap;
+  }
+  .arch-bridge-split {
+    display: grid;
+    grid-template-columns: minmax(28px, 1fr) auto minmax(28px, 1fr);
+    align-items: center;
+    gap: 0;
+  }
+  .arch-mid {
+    background: var(--surface-2);
+    border: 1px solid var(--line-strong);
+    border-radius: 6px;
+    padding: 8px 12px;
+    text-align: center;
+    min-width: 158px;
+  }
+  .arch-mid-teal {
+    border-color: rgba(86, 173, 163, 0.42);
+    animation: nodeBeatTeal 4.8s ease-in-out infinite;
+  }
+  .arch-mid-amber {
+    border-color: rgba(214, 161, 78, 0.42);
+    animation: nodeBeatAmber 5.8s ease-in-out infinite;
+  }
+  @keyframes nodeBeatTeal {
+    0%, 36%, 68%, 100% { border-color: rgba(86, 173, 163, 0.36); background-color: var(--surface-2); }
+    50% { border-color: rgba(86, 173, 163, 0.82); background-color: rgba(86, 173, 163, 0.11); }
+  }
+  @keyframes nodeBeatAmber {
+    0%, 36%, 68%, 100% { border-color: rgba(214, 161, 78, 0.36); background-color: var(--surface-2); }
+    50% { border-color: rgba(214, 161, 78, 0.82); background-color: rgba(214, 161, 78, 0.11); }
+  }
+  .arch-mid-title {
+    display: block;
+    font-size: 13.5px;
+    font-weight: 700;
+    color: var(--ink);
+    line-height: 1.2;
+  }
+  .arch-mid-teal .arch-mid-title { color: var(--teal); }
+  .arch-mid-amber .arch-mid-title { color: var(--amber-text); }
+  .arch-mid-sub {
+    display: block;
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--muted);
+    margin-top: 2px;
+    line-height: 1.3;
+  }
+
+  /* Animated directional tracks inside the diagram */
+  .arch-track {
+    position: relative;
+    display: block;
+    width: 100%;
+    height: 3px;
+    background: var(--line-strong);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+  .arch-track-wrap {
+    position: relative;
+    display: flex;
+    align-items: center;
+    width: 100%;
+    min-width: 24px;
+  }
+  .arch-track-wrap.has-arrow::after {
+    content: "";
+    flex: none;
+    width: 0;
+    height: 0;
+    margin-left: -1px;
+    border-top: 4.5px solid transparent;
+    border-bottom: 4.5px solid transparent;
+    border-left: 6px solid var(--line-strong);
+  }
+  .arch-track-wrap.rose .arch-track {
+    background: rgba(212, 87, 127, 0.38);
+  }
+  .arch-track-wrap.rose.has-arrow::after {
+    border-left-color: var(--rose);
+  }
+  .arch-track-wrap.teal .arch-track {
+    background: rgba(86, 173, 163, 0.34);
+  }
+  .arch-track-wrap.teal.has-arrow::after {
+    border-left-color: var(--teal);
+  }
+  .arch-track-wrap.amber .arch-track {
+    background: rgba(214, 161, 78, 0.32);
+  }
+  .arch-track-wrap.amber.has-arrow::after {
+    border-left-color: var(--amber);
+  }
+
+  .lane-pulse {
+    position: absolute;
+    inset: 0;
+    will-change: transform, opacity;
+  }
+  .lane-pulse-direct {
+    background: linear-gradient(90deg, transparent 34%, rgba(212, 87, 127, 0.72) 48%, rgba(255, 255, 255, 0.72) 55%, transparent 68%);
+    animation: laneFlowX 3.6s linear infinite;
+  }
+  .lane-pulse-direct.second {
+    animation-delay: -1.8s;
+  }
+  .lane-pulse-in-teal {
+    background: linear-gradient(90deg, transparent 14%, rgba(227, 135, 165, 0.78) 54%, rgba(255, 255, 255, 0.55) 66%, transparent 86%);
+    animation: laneInX 4.8s cubic-bezier(0.3, 0.05, 0.4, 1) infinite;
+  }
+  .lane-pulse-out-teal {
+    background: linear-gradient(90deg, transparent 14%, rgba(86, 173, 163, 0.85) 54%, rgba(255, 255, 255, 0.62) 66%, transparent 86%);
+    animation: laneOutX 4.8s cubic-bezier(0.3, 0.05, 0.4, 1) infinite;
+  }
+  .lane-pulse-in-amber {
+    background: linear-gradient(90deg, transparent 14%, rgba(214, 161, 78, 0.78) 54%, rgba(255, 255, 255, 0.52) 66%, transparent 86%);
+    animation: laneInX 5.8s cubic-bezier(0.3, 0.05, 0.4, 1) infinite;
+  }
+  .lane-pulse-out-amber {
+    background: linear-gradient(90deg, transparent 14%, rgba(226, 180, 104, 0.85) 54%, rgba(255, 255, 255, 0.56) 66%, transparent 86%);
+    animation: laneOutX 5.8s cubic-bezier(0.3, 0.05, 0.4, 1) infinite;
+  }
+  @keyframes laneFlowX {
+    0% { transform: translateX(-68%); opacity: 0; }
+    10% { opacity: 1; }
+    88% { opacity: 1; }
+    100% { transform: translateX(68%); opacity: 0; }
+  }
+  @keyframes laneInX {
+    0% { transform: translateX(-86%); opacity: 0; }
+    6% { opacity: 1; }
+    42% { transform: translateX(86%); opacity: 1; }
+    47%, 100% { transform: translateX(86%); opacity: 0; }
+  }
+  @keyframes laneOutX {
+    0%, 48% { transform: translateX(-86%); opacity: 0; }
+    53% { opacity: 1; }
+    90% { transform: translateX(86%); opacity: 1; }
+    95%, 100% { transform: translateX(86%); opacity: 0; }
+  }
+
+  .arch-note {
+    margin-top: 14px;
+    padding: 11px 14px;
+    border-radius: 6px;
+    border: 1px solid var(--line);
+    background: rgba(18, 19, 21, 0.36);
+    font-size: 13.5px;
+    line-height: 1.5;
+    color: var(--muted);
+  }
+  .arch-note strong {
+    color: var(--ink);
+    font-weight: 600;
+  }
+
+  /* Part 2: Tested on every kind of PC (live from DATA.platforms) */
+  .hw-panel {
+    padding: 18px 22px 20px;
+    border-bottom: 1px solid var(--line);
+  }
+  .hw-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 8px 18px;
+    flex-wrap: wrap;
+    margin-bottom: 6px;
+  }
+  .hw-title {
+    font-family: var(--display);
+    font-weight: 700;
+    font-size: 18px;
+    letter-spacing: -0.015em;
+    color: var(--ink);
+  }
+  .hw-meta {
+    font-family: var(--mono);
+    font-size: 12.5px;
+    color: var(--muted);
+  }
+  .hw-lead {
+    font-size: 14.5px;
+    color: var(--muted);
+    line-height: 1.5;
+    max-width: 76ch;
+    margin-bottom: 14px;
+  }
+  .hw-grid {
+    list-style: none;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 10px;
+  }
+  .hw-card {
+    background: rgba(18, 19, 21, 0.42);
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    padding: 11px 13px;
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+  }
+  .hw-card.untested {
+    border-style: dashed;
+    border-color: var(--line-strong);
+  }
+  .hw-card-top {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 8px;
+  }
+  .hw-card-name {
+    font-size: 14.5px;
+    font-weight: 700;
+    color: var(--ink);
+    line-height: 1.25;
+  }
+  .hw-card-stop {
+    font-family: var(--mono);
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--rose-text);
+    white-space: nowrap;
+  }
+  .hw-card.untested .hw-card-stop {
+    color: var(--dim);
+    font-weight: 500;
+  }
+  .hw-card-detail {
+    font-size: 12.5px;
+    color: var(--muted);
+    line-height: 1.3;
+  }
+  .hw-pips {
+    display: grid;
+    grid-template-columns: repeat(8, minmax(0, 1fr));
+    gap: 3px;
+    margin-top: 2px;
+  }
+  .hw-pip {
+    height: 6px;
+    border-radius: 2px;
+    background: #1c1d21;
+    border: 1px solid #303138;
+  }
+  .hw-pip.done {
+    background: var(--rose);
+    border-color: var(--rose);
+  }
+  .hw-pip.wait {
+    position: relative;
+    overflow: hidden;
+    background: rgba(214, 161, 78, 0.18);
+    border-color: var(--amber);
+  }
+  .hw-pip.wait::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: -12px;
+    width: calc(100% + 12px);
+    background: linear-gradient(
+      -45deg,
+      rgba(214, 161, 78, 0.9) 25%,
+      rgba(214, 161, 78, 0.24) 25%,
+      rgba(214, 161, 78, 0.24) 50%,
+      rgba(214, 161, 78, 0.9) 50%,
+      rgba(214, 161, 78, 0.9) 75%,
+      rgba(214, 161, 78, 0.24) 75%
+    );
+    background-size: 12px 12px;
+    animation: hatchShift 4.4s linear infinite;
+    will-change: transform;
+  }
+  .hw-card-status {
+    font-size: 12.5px;
+    color: var(--muted);
+    line-height: 1.3;
+  }
+  .hw-card-status strong {
+    color: var(--ink);
+    font-weight: 500;
+  }
+  .hw-card-status .hw-wait-note {
+    color: var(--amber-text);
+  }
+
+  /* Part 3: Real-data change review bar */
+  .approach-gate {
+    padding: 16px 22px 18px;
+    background: rgba(30, 31, 35, 0.42);
+  }
+  .approach-gate-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 8px 18px;
+    flex-wrap: wrap;
+    margin-bottom: 11px;
+  }
+  .approach-gate-title {
+    font-size: 14.5px;
+    font-weight: 600;
+    color: var(--ink);
+  }
+  .approach-gate-hw {
+    font-family: var(--mono);
+    font-size: 12.5px;
+    color: var(--muted);
+  }
+  .approach-bar {
+    height: 12px;
+    width: 100%;
+    border-radius: 3px;
+    background: var(--surface-2);
+    border: 1px solid var(--line);
+    overflow: hidden;
+    padding: 1px;
+  }
+  .approach-bar-track {
+    display: flex;
+    gap: 2px;
+    width: 100%;
+    height: 100%;
+    transform-origin: left center;
+  }
+  html.anim-ready #approachSection:not(.in-view) .approach-bar-track {
+    transform: scaleX(0);
+  }
+  html.anim-ready #approachSection.in-view .approach-bar-track {
+    transform: scaleX(1);
+    transition: transform 0.78s cubic-bezier(0.22, 1, 0.36, 1) 0.1s;
+  }
+  .approach-seg {
+    height: 100%;
+    min-width: 3px;
+    border-radius: 2px;
+  }
+  .approach-seg.acc { background: var(--rose); }
+  .approach-seg.wait {
+    position: relative;
+    overflow: hidden;
+    background: rgba(214, 161, 78, 0.18);
+  }
+  .approach-seg.wait::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: -12px;
+    width: calc(100% + 12px);
+    background: linear-gradient(
+      -45deg,
+      rgba(214, 161, 78, 0.92) 25%,
+      rgba(214, 161, 78, 0.28) 25%,
+      rgba(214, 161, 78, 0.28) 50%,
+      rgba(214, 161, 78, 0.92) 50%,
+      rgba(214, 161, 78, 0.92) 75%,
+      rgba(214, 161, 78, 0.28) 75%
+    );
+    background-size: 12px 12px;
+    animation: hatchShift 4.4s linear infinite;
+    will-change: transform;
+  }
+  .approach-seg.closed { background: var(--closed); }
+  .approach-stats {
+    display: flex;
+    align-items: baseline;
+    gap: 8px 22px;
+    flex-wrap: wrap;
+    margin-top: 11px;
+    font-size: 13.5px;
+    color: var(--muted);
+  }
+  .approach-stat {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+  }
+  .approach-stat strong {
+    font-family: var(--mono);
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--ink);
+  }
+  .approach-stat.acc strong { color: var(--rose-text); }
+  .approach-stat.wait strong { color: var(--amber-text); }
+  .approach-pct {
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--dim);
+  }
+
+  /* ---------- Project Activity (Stats band + Hourly chart + Areas) ---------- */
+  .stats-band {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    border-top: 1px solid var(--line);
+    border-bottom: 1px solid var(--line);
+    margin-bottom: 22px;
+  }
+  .stat-cell {
+    padding: 18px 18px;
+    border-right: 1px solid var(--line);
+  }
+  .stat-cell:first-child { padding-left: 0; }
+  .stat-cell:last-child { border-right: 0; padding-right: 0; }
+  .stat-num {
+    font-family: var(--display);
+    font-weight: 700;
+    font-size: clamp(28px, 3vw, 36px);
+    line-height: 1.05;
+    letter-spacing: -0.025em;
+    color: var(--ink);
+  }
+  .stat-lbl {
+    font-size: 14.5px;
+    font-weight: 600;
+    color: var(--ink);
+    margin-top: 5px;
+  }
+  .stat-sub {
+    font-size: 13.5px;
+    color: var(--muted);
+    margin-top: 3px;
+    line-height: 1.4;
+  }
+
+  .activity-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1.55fr) minmax(0, 1fr);
+    gap: 20px;
+    align-items: stretch;
+  }
+  .panel {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 18px 20px;
+    display: flex;
+    flex-direction: column;
+  }
+  .panel-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 8px 14px;
+    flex-wrap: wrap;
+    margin-bottom: 16px;
+  }
+  .panel-title {
+    font-weight: 700;
+    font-size: 15.5px;
+    color: var(--ink);
+  }
+  .panel-readout {
+    font-family: var(--mono);
+    font-size: 12.5px;
+    color: var(--muted);
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .clear-filter {
+    background: var(--teal-bg);
+    border: 1px solid rgba(86, 173, 163, 0.35);
+    color: var(--teal);
+    border-radius: 4px;
+    padding: 2px 7px;
+    font-family: var(--mono);
+    font-size: 11.5px;
+    cursor: pointer;
+    transition: background-color 0.14s ease, transform 0.14s ease;
+  }
+  .clear-filter:hover { background: rgba(86, 173, 163, 0.18); transform: translateY(-1px); }
+  .clear-filter:active { transform: translateY(0) scale(0.98); }
+
+  /* Hourly chart: clean 2-row grid so Y-axis aligns strictly to the plot box */
+  .chart-frame {
+    display: grid;
+    grid-template-columns: 28px minmax(0, 1fr);
+    grid-template-rows: 170px auto;
+    column-gap: 10px;
+    row-gap: 8px;
+    flex: 1;
+  }
+  .chart-yaxis {
+    grid-column: 1;
+    grid-row: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    text-align: right;
+    font-family: var(--mono);
+    font-size: 11.5px;
+    line-height: 1;
+    color: var(--dim);
+  }
+  .chart-plot {
+    grid-column: 2;
+    grid-row: 1;
+    position: relative;
+    display: flex;
+    align-items: flex-end;
+    gap: 4px;
+    border-bottom: 1px solid var(--line-strong);
+    background: linear-gradient(to bottom, var(--line) 1px, transparent 1px);
+    background-size: 100% 50%;
+  }
+  .bar-col {
+    flex: 1;
+    min-width: 0;
+    height: 100%;
+    padding: 0 3px;
+    border: 0;
+    background: transparent;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    align-items: center;
+    cursor: pointer;
+    position: relative;
+  }
+  .bar-col:hover .bar-stack,
+  .bar-col.active .bar-stack {
+    filter: brightness(1.18);
+  }
+  .bar-col:hover::before,
+  .bar-col.active::before {
+    content: "";
+    position: absolute;
+    inset: 0 1px;
+    background: rgba(255, 255, 255, 0.04);
+    border-radius: 3px 3px 0 0;
+    pointer-events: none;
+  }
+  .bar-stack {
+    width: 100%;
+    max-width: 26px;
+    display: flex;
+    flex-direction: column-reverse;
+    border-radius: 3px 3px 0 0;
+    overflow: hidden;
+    transform-origin: bottom;
+    transition: height 0.35s ease, filter 0.14s ease, transform 0.55s cubic-bezier(0.2, 0.75, 0.2, 1);
+  }
+  .bar-stack.enter {
+    transform: scaleY(0);
+  }
+  .bar-seg { width: 100%; }
+  .bar-seg.acc { background: var(--rose); }
+  .bar-seg.wait {
+    background: var(--amber-fill);
+    box-shadow: inset 0 1.5px 0 0 var(--amber);
+  }
+  .bar-seg.closed { background: var(--closed); }
+
+  /* Subtle live marker on the latest (current) hour column */
+  .bar-col.latest .bar-stack {
+    position: relative;
+    box-shadow: inset 0 2px 0 0 var(--teal);
+  }
+  .bar-col.latest .bar-stack::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: var(--teal);
+    animation: liveBarCap 3.8s ease-in-out infinite;
+  }
+  .bar-live-pip {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--teal);
+    margin-bottom: 5px;
+    flex: none;
+    animation: livePipBreath 3.8s ease-in-out infinite;
+    will-change: transform, opacity;
+  }
+  .bar-col.latest.empty .bar-live-base {
+    height: 3px;
+    width: 100%;
+    max-width: 26px;
+    background: var(--teal);
+    border-radius: 2px 2px 0 0;
+    animation: liveBarCap 3.8s ease-in-out infinite;
+  }
+  @keyframes liveBarCap {
+    0%, 100% { opacity: 0.52; }
+    50% { opacity: 1; }
+  }
+  @keyframes livePipBreath {
+    0%, 100% { opacity: 0.5; transform: scale(0.85); }
+    50% { opacity: 1; transform: scale(1.12); }
+  }
+
+  .chart-xaxis {
+    grid-column: 2;
+    grid-row: 2;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 8px;
+    font-family: var(--mono);
+    font-size: 11.5px;
+    color: var(--muted);
+  }
+  .chart-legend {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    flex-wrap: wrap;
+    margin-top: 14px;
+    padding-top: 12px;
+    border-top: 1px solid var(--line);
+    font-size: 12.5px;
+    color: var(--muted);
+  }
+  .dot-lbl {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .dot-sq {
+    width: 9px;
+    height: 9px;
+    border-radius: 2px;
+    display: inline-block;
+  }
+  .dot-sq.acc { background: var(--rose); }
+  .dot-sq.wait { background: var(--amber); }
+  .dot-sq.closed { background: var(--closed); }
+  .dot-sq.now {
+    background: var(--teal);
+    border-radius: 50%;
+    animation: liveBarCap 3.8s ease-in-out infinite;
+  }
+
+  /* Areas panel */
+  .area-list {
+    list-style: none;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 4px;
+    flex: 1;
+  }
+  .area-btn {
+    width: 100%;
+    text-align: left;
+    background: transparent;
+    border: 1px solid transparent;
+    border-radius: 6px;
+    padding: 8px 10px;
+    cursor: pointer;
+    transition: background-color 0.14s ease, border-color 0.14s ease, transform 0.14s ease;
+  }
+  .area-btn:hover {
+    background: var(--surface-2);
+    border-color: var(--line);
+    transform: translateX(2px);
+  }
+  .area-btn:active {
+    transform: translateX(1px);
+  }
+  .area-btn.selected {
+    background: var(--surface-2);
+    border-color: var(--teal);
+  }
+  .area-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 10px;
+    margin-bottom: 6px;
+  }
+  .area-name {
+    font-size: 14.5px;
+    font-weight: 500;
+    color: var(--ink);
+  }
+  .area-count {
+    font-family: var(--mono);
+    font-size: 12.5px;
+    color: var(--muted);
+  }
+  .area-bar {
+    height: 5px;
+    width: 100%;
+    background: #1d1e22;
+    border-radius: 3px;
+    overflow: hidden;
+    display: flex;
+  }
+  .area-seg.acc { background: var(--rose); }
+  .area-seg.wait { background: var(--amber-fill); }
+  .area-seg.closed { background: var(--closed); }
+
+  /* ---------- Recent updates (Changelog) ---------- */
+  .filter-bar {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
+  }
+  .filter-pill {
+    background: transparent;
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    padding: 5px 10px;
+    font-size: 13px;
+    color: var(--muted);
+    cursor: pointer;
+    transition: border-color 0.14s ease, color 0.14s ease, background-color 0.14s ease, transform 0.14s ease;
+  }
+  .filter-pill:hover {
+    color: var(--ink);
+    border-color: var(--line-strong);
+    transform: translateY(-1px);
+  }
+  .filter-pill:active {
+    transform: translateY(0) scale(0.985);
+  }
+  .filter-pill[aria-pressed="true"] {
+    background: var(--surface-2);
+    border-color: var(--teal);
+    color: var(--ink);
+    font-weight: 500;
+  }
+
+  .news-list {
+    list-style: none;
+    padding: 0;
+    margin-top: 16px;
+    border-top: 1px solid var(--line);
+  }
+  .news-row {
+    display: grid;
+    grid-template-columns: 118px 146px minmax(0, 1fr);
+    gap: 8px 18px;
+    padding: 14px 0;
+    border-bottom: 1px solid var(--line);
+    align-items: baseline;
+  }
+  .news-row.is-latest {
+    position: relative;
+    padding-left: 14px;
+    border-left: 2px solid var(--teal);
+    background: linear-gradient(90deg, rgba(86, 173, 163, 0.06) 0%, transparent 52%);
+  }
+  .news-live-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    margin-right: 8px;
+    padding: 1px 6px;
+    border-radius: 4px;
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--teal);
+    background: var(--teal-bg);
+    border: 1px solid rgba(86, 173, 163, 0.3);
+    vertical-align: 1px;
+  }
+  .news-live-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--teal);
+    animation: livePipBreath 4.0s ease-in-out infinite;
+  }
+  .news-time {
+    font-family: var(--mono);
+    font-size: 12.5px;
+    color: var(--muted);
+    white-space: nowrap;
+  }
+  .news-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    font-size: 13px;
+    font-weight: 500;
+    white-space: nowrap;
+  }
+  .news-tag.ok { color: var(--rose-text); }
+  .news-tag.wait { color: var(--amber-text); }
+  .news-tag.team { color: var(--muted); }
+  .news-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    flex: none;
+  }
+  .news-tag.ok .news-dot { background: var(--rose); }
+  .news-tag.wait .news-dot { border: 1.5px solid var(--amber); background: transparent; }
+  .news-tag.team .news-dot { background: var(--dim); }
+  .news-text {
+    font-size: 15px;
+    color: var(--ink);
+    line-height: 1.5;
+  }
+
+  .more-wrap {
+    margin-top: 16px;
+  }
+  .more-btn {
+    background: var(--surface);
+    border: 1px solid var(--line-strong);
+    border-radius: 6px;
+    padding: 8px 14px;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--ink);
+    cursor: pointer;
+    transition: border-color 0.14s ease, background-color 0.14s ease, transform 0.14s ease;
+  }
+  .more-btn:hover {
+    border-color: var(--muted);
+    background: var(--surface-2);
+    transform: translateY(-1px);
+  }
+  .more-btn:active {
+    transform: translateY(0) scale(0.985);
+  }
+
+  /* ---------- Footer ---------- */
+  footer {
+    margin-top: clamp(44px, 6vw, 68px);
+    padding-top: 24px;
+    padding-bottom: 36px;
+    border-top: 1px solid var(--line);
+    font-size: 13.5px;
+    color: var(--muted);
+  }
+  footer.wrap { margin-top: clamp(44px, 6vw, 68px); }  /* .wrap's margin: 0 auto was cancelling it */
+  footer a { color: var(--ink); text-underline-offset: 3px; }
+  footer a:hover { color: var(--rose-text); }
+  .legal {
+    padding: 16px 18px;
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    background: var(--surface);
+    max-width: 82ch;
+    line-height: 1.6;
+  }
+  .legal-title {
+    font-family: var(--body);
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--dim);
+    margin-bottom: 6px;
+  }
+  .legal p + p { margin-top: 6px; }
+  .legal strong { color: var(--ink); font-weight: 600; }
+  .foot-row {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 10px 24px;
+    flex-wrap: wrap;
+    margin-top: 18px;
+  }
+  .topbar { justify-content: flex-start; }
+  .topbar-meta { margin-left: auto; order: 2; }
+  .discord-btn { text-decoration: none; display: inline-flex; align-items: center; gap: 6px; white-space: nowrap; order: 3; }
+  .discord-btn svg { flex: none; display: block; }
+  .early-wrap { padding-top: 14px; }
+  .early-note {
+    display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap;
+    padding: 9px 14px; border: 1px solid var(--line); border-radius: var(--radius);
+    background: var(--surface); font-size: 14px; color: var(--muted);
+  }
+  .early-tag {
+    font-family: var(--mono); font-size: 12px; font-weight: 600; color: var(--amber-text);
+    padding: 1px 7px; border-radius: 4px; background: var(--amber-bg); white-space: nowrap;
+  }
+  /* local-only page links (empty on the public page) */
+  .site-nav { display: flex; gap: 4px; margin-left: 8px; order: 1; }
+  .site-nav a {
+    padding: 6px 10px;
+    border-radius: 6px;
+    font-size: 14px;
+    color: var(--muted);
+    text-decoration: none;
+  }
+  .site-nav a:hover { color: var(--ink); background: var(--surface); }
+  .site-nav a[aria-current="page"] { color: var(--ink); background: var(--surface-2); }
+
+  /* ---------- Responsive: Tablet & Mobile (down to 390px) ---------- */
+  @media (max-width: 960px) {
+    .stats-band {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+    .stat-cell {
+      padding: 15px 16px;
+      border-right: 1px solid var(--line);
+      border-bottom: 1px solid var(--line);
+    }
+    .stat-cell:nth-child(odd) { padding-left: 0; }
+    .stat-cell:nth-child(even) { border-right: 0; padding-right: 0; }
+    .stat-cell:nth-last-child(-n+2) { border-bottom: 0; }
+  }
+
+  @media (max-width: 859px) {
+    .hero-head {
+      grid-template-columns: 1fr;
+      gap: 16px;
+      margin-bottom: 20px;
+    }
+    .step-counter {
+      text-align: left;
+      border-left: 0;
+      padding-left: 0;
+      padding-bottom: 0;
+      display: flex;
+      align-items: baseline;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .step-caption { margin-top: 0; }
+    .step-meter { flex-basis: 100%; width: 100%; margin: 4px 0 0; }
+    .step-scale { max-width: none; margin: 4px 0 0; flex-basis: 100%; }
+
+    /* Vertical 8-stop ladder on mobile */
+    html.anim-ready .ladder-seg-done,
+    html.anim-ready .ladder-seg-wait {
+      transform-origin: top center;
+      transform: scaleY(0);
+    }
+    html.anim-ready.hero-entered .ladder-seg-done,
+    html.anim-ready.hero-entered .ladder-seg-wait {
+      transform: scaleY(1);
+    }
+    .ladder-body {
+      padding: 16px 16px 14px;
+    }
+    .ladder-seg-wait::before {
+      left: 0;
+      right: 0;
+      top: -12px;
+      width: 100%;
+      height: calc(100% + 12px);
+      background: repeating-linear-gradient(
+        180deg,
+        var(--amber) 0 6px,
+        rgba(214, 161, 78, 0.22) 6px 12px
+      );
+      animation: waitRailY 3.6s linear infinite;
+    }
+    @keyframes waitRailY {
+      from { transform: translateY(0); }
+      to { transform: translateY(12px); }
+    }
+    .ladder-pulse {
+      top: 0;
+      left: 0;
+      right: 0;
+      width: 100%;
+      height: 54px;
+      background: linear-gradient(180deg, transparent 0%, rgba(255, 255, 255, 0.42) 55%, rgba(212, 87, 127, 0.45) 85%, transparent 100%);
+      animation: railSweepY 5.2s cubic-bezier(0.35, 0.05, 0.35, 1) infinite;
+    }
+    @keyframes railSweepY {
+      0% { transform: translateY(-62px); opacity: 0; }
+      10% { opacity: 1; }
+      68% { opacity: 0.92; }
+      82% { transform: translateY(var(--sweep-end-y, 180px)); opacity: 0; }
+      100% { transform: translateY(var(--sweep-end-y, 180px)); opacity: 0; }
+    }
+    .ladder-grid {
+      grid-template-columns: 1fr;
+      gap: 0;
+    }
+    .stop {
+      flex-direction: row;
+      align-items: center;
+      text-align: left;
+      padding: 7px 0;
+      gap: 10px;
+    }
+    .stop-num {
+      width: 20px;
+      height: auto;
+      line-height: 1.2;
+      margin-bottom: 0;
+      flex: none;
+    }
+    .stop-node-slot {
+      width: 20px;
+      height: 20px;
+      margin-bottom: 0;
+      flex: none;
+    }
+    .stop-name {
+      max-width: none;
+      flex: 1;
+      font-size: 14.5px;
+    }
+    .stop-flag {
+      margin-top: 0;
+      margin-left: auto;
+    }
+    .honest-rule { padding: 12px 16px; }
+
+    /* PC Matrix stacks cleanly without repeated labels */
+    .matrix-head { display: none; }
+    .pc-row {
+      grid-template-columns: 1fr;
+      gap: 9px;
+      padding: 14px 16px;
+    }
+    .pc-row.untested .pc-status { display: none; }
+    .cell { height: 14px; }
+    .matrix-foot { padding: 12px 16px; }
+    .cell-inspect { display: none; }
+
+    .parts-grid { grid-template-columns: 1fr; gap: 14px; }
+    .arch-panel { padding: 16px; }
+    .arch-col-heads { display: none; }
+    .arch-lane {
+      grid-template-columns: 1fr;
+      gap: 0;
+      padding: 12px;
+    }
+    .arch-dst { text-align: left; }
+    .arch-side-lbl { display: block; }
+    .arch-bridge-direct {
+      flex-direction: row;
+      align-items: center;
+      justify-content: flex-start;
+      gap: 12px;
+      padding: 0 0 0 14px;
+    }
+    .arch-bridge-direct .arch-track-wrap {
+      flex-direction: column;
+      width: auto;
+      min-width: 0;
+      height: 36px;
+      flex: none;
+    }
+    .arch-bridge-split {
+      grid-template-columns: 1fr;
+      justify-items: stretch;
+    }
+    .arch-bridge-split .arch-track-wrap {
+      flex-direction: column;
+      width: auto;
+      min-width: 0;
+      height: 22px;
+      margin-left: 14px;
+      align-items: center;
+      justify-self: start;
+    }
+    .arch-track-wrap .arch-track {
+      width: 3px;
+      height: 100%;
+    }
+    .arch-track-wrap.has-arrow::after {
+      margin-left: 0;
+      margin-top: -1px;
+      border-left: 4.5px solid transparent;
+      border-right: 4.5px solid transparent;
+      border-bottom: 0;
+      border-top: 6px solid var(--line-strong);
+    }
+    .arch-track-wrap.rose.has-arrow::after { border-left-color: transparent; border-top-color: var(--rose); }
+    .arch-track-wrap.teal.has-arrow::after { border-left-color: transparent; border-top-color: var(--teal); }
+    .arch-track-wrap.amber.has-arrow::after { border-left-color: transparent; border-top-color: var(--amber); }
+    .arch-mid {
+      text-align: left;
+      min-width: 0;
+    }
+    .lane-pulse-direct {
+      background: linear-gradient(180deg, transparent 28%, rgba(212, 87, 127, 0.75) 48%, rgba(255, 255, 255, 0.72) 56%, transparent 72%);
+      animation: laneFlowY 3.6s linear infinite;
+    }
+    .lane-pulse-direct.second { animation-delay: -1.8s; }
+    .lane-pulse-in-teal {
+      background: linear-gradient(180deg, transparent 10%, rgba(227, 135, 165, 0.78) 54%, rgba(255, 255, 255, 0.55) 66%, transparent 88%);
+      animation: laneInY 4.8s cubic-bezier(0.3, 0.05, 0.4, 1) infinite;
+    }
+    .lane-pulse-out-teal {
+      background: linear-gradient(180deg, transparent 10%, rgba(86, 173, 163, 0.85) 54%, rgba(255, 255, 255, 0.62) 66%, transparent 88%);
+      animation: laneOutY 4.8s cubic-bezier(0.3, 0.05, 0.4, 1) infinite;
+    }
+    .lane-pulse-in-amber {
+      background: linear-gradient(180deg, transparent 10%, rgba(214, 161, 78, 0.78) 54%, rgba(255, 255, 255, 0.52) 66%, transparent 88%);
+      animation: laneInY 5.8s cubic-bezier(0.3, 0.05, 0.4, 1) infinite;
+    }
+    .lane-pulse-out-amber {
+      background: linear-gradient(180deg, transparent 10%, rgba(226, 180, 104, 0.85) 54%, rgba(255, 255, 255, 0.56) 66%, transparent 88%);
+      animation: laneOutY 5.8s cubic-bezier(0.3, 0.05, 0.4, 1) infinite;
+    }
+    @keyframes laneFlowY {
+      0% { transform: translateY(-72%); opacity: 0; }
+      10% { opacity: 1; }
+      88% { opacity: 1; }
+      100% { transform: translateY(72%); opacity: 0; }
+    }
+    @keyframes laneInY {
+      0% { transform: translateY(-88%); opacity: 0; }
+      6% { opacity: 1; }
+      42% { transform: translateY(88%); opacity: 1; }
+      47%, 100% { transform: translateY(88%); opacity: 0; }
+    }
+    @keyframes laneOutY {
+      0%, 48% { transform: translateY(-88%); opacity: 0; }
+      53% { opacity: 1; }
+      90% { transform: translateY(88%); opacity: 1; }
+      95%, 100% { transform: translateY(88%); opacity: 0; }
+    }
+    .hw-panel { padding: 15px 16px 16px; }
+    .hw-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .approach-gate { padding: 15px 16px 16px; }
+    .activity-grid { grid-template-columns: 1fr; gap: 14px; }
+
+    .news-row {
+      grid-template-columns: auto minmax(0, 1fr);
+      gap: 4px 12px;
+      padding: 12px 0;
+    }
+    .news-text { grid-column: 1 / -1; }
+  }
+
+  @media (max-width: 520px) {
+    section { padding-top: 36px; }
+    .topbar { padding-top: 16px; padding-bottom: 14px; }
+    .brand-tag { display: none; }
+    .brand-logo { height: 48px; }
+    .topbar-meta { width: 100%; justify-content: space-between; order: 4; }
+    .discord-btn { order: 2; margin-left: auto; }
+    .site-nav { order: 5; width: 100%; margin-left: -10px; }
+    .panel { padding: 16px; }
+    .hw-grid { grid-template-columns: 1fr; }
+    .arch-pill-direct { white-space: normal; }
+    .chart-frame { grid-template-rows: 150px auto; }
+    .chart-plot { gap: 2px; }
+    .bar-col { padding: 0; }
+    .bar-live-pip { width: 5px; height: 5px; }
+  }
+
+  /* ---------- Ambient scene: dusk-to-night skyline with parallax (25.11) ---------- */
+  html, body { background: transparent; }
+  html { background-color: var(--bg); }
+  .scene {
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    overflow: hidden;
+    pointer-events: none;
+    --night: 0;
+    background: linear-gradient(180deg, #101114 0%, #141220 34%, #22142a 58%, #3d1a2f 76%, #5b2632 88%, #6a3328 100%);
+  }
+  .scene-night {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, #0b0c10 0%, #0e0f18 50%, #161126 85%, #1c1222 100%);
+    opacity: calc(var(--night) * 0.9);
+  }
+  .scene-stars {
+    position: absolute;
+    inset: 0 0 40% 0;
+    opacity: calc(0.15 + var(--night) * 0.85);
+  }
+  .scene-stars i {
+    position: absolute;
+    width: 2px;
+    height: 2px;
+    border-radius: 50%;
+    background: #f3e9f2;
+    animation: starTwinkle var(--d, 5s) ease-in-out var(--dl, 0s) infinite;
+  }
+  @keyframes starTwinkle {
+    0%, 100% { opacity: 0.15; }
+    50% { opacity: 0.9; }
+  }
+  .scene-glow {
+    position: absolute;
+    left: 50%;
+    bottom: 4vh;
+    width: 130vmax;
+    height: 60vh;
+    transform: translateX(-50%);
+    background: radial-gradient(closest-side, rgba(240, 120, 90, 0.38), rgba(212, 87, 127, 0.16) 45%, transparent 75%);
+    opacity: calc(1 - var(--night) * 0.55);
+  }
+  .scene-sun {
+    position: absolute;
+    left: 50%;
+    bottom: 9vh;
+    width: min(44vmin, 420px);
+    aspect-ratio: 1;
+    margin-left: calc(min(44vmin, 420px) / -2);
+    border-radius: 50%;
+    background: linear-gradient(180deg, #ffbf7a 0%, #f08a5d 38%, #e0607a 70%, #b8457a 100%);
+    -webkit-mask: linear-gradient(180deg, #000 54%, transparent 54.5%, transparent 56%, #000 56.5%, #000 63%, transparent 63.5%, transparent 66.5%, #000 67%, #000 72.5%, transparent 73%, transparent 77.5%, #000 78%, #000 82%, transparent 82.5%, transparent 88.5%, #000 89%, #000 91%, transparent 91.5%);
+            mask: linear-gradient(180deg, #000 54%, transparent 54.5%, transparent 56%, #000 56.5%, #000 63%, transparent 63.5%, transparent 66.5%, #000 67%, #000 72.5%, transparent 73%, transparent 77.5%, #000 78%, #000 82%, transparent 82.5%, transparent 88.5%, #000 89%, #000 91%, transparent 91.5%);
+    filter: drop-shadow(0 0 40px rgba(240, 120, 110, 0.55));
+    opacity: calc(0.5 - var(--night) * 0.2);
+    will-change: transform;
+    animation: sunBreath 9s ease-in-out infinite;
+  }
+  @keyframes sunBreath {
+    0%, 100% { filter: drop-shadow(0 0 34px rgba(240, 120, 110, 0.45)); }
+    50% { filter: drop-shadow(0 0 60px rgba(240, 120, 110, 0.75)); }
+  }
+  .scene-haze {
+    position: absolute;
+    width: 55vmax;
+    height: 55vmax;
+    border-radius: 50%;
+    filter: blur(44px);
+    opacity: 0.16;
+    will-change: transform;
+  }
+  .scene-haze.h1 { left: -12vmax; top: 8vh; background: #d4577f; animation: hazeA 38s ease-in-out infinite; }
+  .scene-haze.h2 { right: -16vmax; top: 30vh; background: #56ada3; opacity: 0.1; animation: hazeB 46s ease-in-out infinite; }
+  @keyframes hazeA { 0%, 100% { transform: translate(0, 0); } 50% { transform: translate(18vw, 10vh); } }
+  @keyframes hazeB { 0%, 100% { transform: translate(0, 0); } 50% { transform: translate(-20vw, -8vh); } }
+  .scene-layer {
+    position: absolute;
+    left: -4%;
+    width: 108%;
+    bottom: 0;
+    display: block;
+    overflow: visible;
+    box-shadow: 0 140px 0 0 var(--c);  /* solid ground below, so rising layers never show a gap */
+    will-change: transform;
+  }
+  .scene-layer.far { height: 52vh; }
+  .scene-layer.mid { height: 40vh; }
+  .scene-layer.near { height: 30vh; }
+  .scene-layer .bld { fill: var(--c); }
+  .scene-layer.far { --c: #2b1b34; }
+  .scene-layer.mid { --c: #1d1525; }
+  .scene-layer.near { --c: #0d0c10; }
+  .scene-win { fill: #f2b36b; opacity: calc(0.22 + var(--night) * 0.6); }
+  .scene-win .r { fill: #e387a5; }
+  .scene-win .t { fill: #7fd6cb; }
+  .scene-win .flick { animation: winFlick var(--d, 7s) steps(1, end) var(--dl, 0s) infinite; }
+  .scene-rim { fill: rgba(246, 150, 112, 0.32); opacity: calc(1 - var(--night) * 0.85); }
+  .scene-neon { opacity: 0.85; animation: neonBreath 5s ease-in-out var(--dl, 0s) infinite; }
+  .scene-sign { opacity: 0.8; animation: signBuzz 11s steps(1, end) var(--dl, 0s) infinite; }
+  .scene-road { stroke: rgba(212, 87, 127, 0.35); stroke-width: 1.2; filter: drop-shadow(0 0 4px rgba(212, 87, 127, 0.8)); }
+  .scene-lamp { fill: #ffcf8a; filter: drop-shadow(0 0 5px rgba(255, 190, 110, 0.9)); }
+  @keyframes neonBreath { 0%, 100% { opacity: 0.55; } 50% { opacity: 1; } }
+  @keyframes signBuzz { 0%, 100% { opacity: 0.85; } 61% { opacity: 0.2; } 62% { opacity: 0.85; } 64% { opacity: 0.25; } 66% { opacity: 0.85; } }
+  @keyframes winFlick {
+    0%, 100% { opacity: 1; }
+    45% { opacity: 0.25; }
+    70% { opacity: 1; }
+  }
+  .scene-beacon { fill: #ff4d6d; animation: beacon 2.4s ease-in-out var(--dl, 0s) infinite; }
+  @keyframes beacon {
+    0%, 55%, 100% { opacity: 0.1; }
+    62%, 80% { opacity: 1; }
+  }
+  .scene-shade {
+    position: absolute;
+    inset: 0;
+    background:
+      linear-gradient(90deg, transparent 0%, rgba(14, 14, 18, 0.5) 20%, rgba(14, 14, 18, 0.5) 80%, transparent 100%),
+      linear-gradient(180deg, rgba(18, 19, 21, 0.55) 0%, rgba(18, 19, 21, 0.15) 35%, transparent 60%);
+  }
+  @media (max-width: 1000px) {
+    .scene-shade { background: linear-gradient(180deg, rgba(14, 14, 18, 0.6) 0%, rgba(14, 14, 18, 0.45) 100%); }
+  }
+  @media (max-width: 720px) {
+    .scene-layer.far { height: 34vh; }
+    .scene-layer.mid { height: 27vh; }
+    .scene-layer.near { height: 20vh; }
+    .scene-sun { bottom: 10vh; }
+    .scene-haze { display: none; }
+  }
+
+  /* ---------- Glass panels and glow (25.11) ---------- */
+  .ladder-card, .matrix-box, .parts-col, .approach-box, .panel, .early-note, .more-btn, .motion-btn {
+    background:
+      radial-gradient(420px circle at var(--mx, -999px) var(--my, -999px), rgba(227, 135, 165, 0.09), transparent 62%),
+      rgba(24, 25, 28, 0.86);
+    -webkit-backdrop-filter: blur(12px) saturate(1.15);
+            backdrop-filter: blur(12px) saturate(1.15);
+    transition: border-color 0.25s ease, box-shadow 0.35s ease, transform 0.25s ease;
+  }
+  .ladder-card:hover, .matrix-box:hover, .parts-col:hover, .approach-box:hover, .panel:hover {
+    border-color: rgba(212, 87, 127, 0.38);
+    box-shadow: 0 0 0 1px rgba(212, 87, 127, 0.08), 0 18px 60px -24px rgba(212, 87, 127, 0.45);
+  }
+  .motion-btn:hover { box-shadow: 0 0 22px -6px rgba(212, 87, 127, 0.7); border-color: rgba(212, 87, 127, 0.55); }
+  .step-ratio {
+    text-shadow: 0 0 18px rgba(212, 87, 127, 0.55), 0 0 46px rgba(212, 87, 127, 0.3);
+    animation: ratioGlow 4.8s ease-in-out infinite;
+  }
+  @keyframes ratioGlow {
+    0%, 100% { text-shadow: 0 0 14px rgba(212, 87, 127, 0.45), 0 0 38px rgba(212, 87, 127, 0.22); }
+    50% { text-shadow: 0 0 24px rgba(227, 135, 165, 0.75), 0 0 70px rgba(212, 87, 127, 0.4); }
+  }
+  .verdict-title {
+    background: linear-gradient(100deg, var(--ink) 0%, var(--ink) 40%, #ffd2c2 48%, #f3a0bb 52%, var(--ink) 60%, var(--ink) 100%);
+    background-size: 260% 100%;
+    background-position: 100% 0;
+    -webkit-background-clip: text;
+            background-clip: text;
+    -webkit-text-fill-color: transparent;
+    filter: drop-shadow(0 0 22px rgba(212, 87, 127, 0.18));
+    animation: titleSheen 7s ease-in-out 1.2s infinite;
+  }
+  @keyframes titleSheen {
+    0% { background-position: 100% 0; }
+    45%, 100% { background-position: 0% 0; }
+  }
+  .sec-head h2 { text-shadow: 0 0 26px rgba(212, 87, 127, 0.22); }
+  .verdict-summary, .verdict-kicker, .sec-lead, .sec-head p { text-shadow: 0 1px 12px rgba(10, 10, 14, 0.9), 0 0 2px rgba(10, 10, 14, 0.8); }
+  .sec-head h2::after {
+    content: "";
+    display: block;
+    width: 44px;
+    height: 2px;
+    margin-top: 8px;
+    border-radius: 2px;
+    background: linear-gradient(90deg, var(--rose), var(--sunset-orange));
+    box-shadow: 0 0 12px rgba(212, 87, 127, 0.8);
+  }
+
+  .topbar.sub .discord-btn { margin-left: auto; }
+  .page-head { padding-top: clamp(30px, 4.8vw, 50px); }
+  .page-title {
+    font-family: var(--display); font-weight: 800; font-size: clamp(34px, 4.6vw, 50px);
+    line-height: 1.05; letter-spacing: -0.03em; color: var(--ink); margin-bottom: 12px;
+  }
+  .page-lead { font-size: 16.5px; color: var(--muted); max-width: 64ch; }
+  .page-lead strong { color: var(--ink); font-weight: 600; }
+  .local-tag {
+    display: inline-block; margin-left: 10px; padding: 2px 7px; border: 1px solid var(--line-strong);
+    border-radius: 5px; font-family: var(--mono); font-size: 11.5px; color: var(--dim); vertical-align: middle;
+  }
+
+  /* contributors */
+  .contrib-top { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.7fr); gap: 18px; margin-top: 26px; }
+  .ctiles { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .ctile {
+    display: flex; flex-direction: column; justify-content: flex-end; gap: 2px; padding: 16px 18px;
+    border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface);
+  }
+  .cbig { font-family: var(--display); font-weight: 800; font-size: clamp(34px, 4vw, 46px); line-height: 1; color: var(--ink); letter-spacing: -0.02em; }
+  .cbig.acc { color: var(--rose-text); }
+  .cbig.wait { color: var(--amber-text); }
+  .clab { font-size: 14px; color: var(--muted); }
+  .csub { margin-top: 6px; font-size: 12.5px; color: var(--dim); line-height: 1.35; }
+  .cpanel { border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface); padding: 14px 18px 16px; }
+  .cpanel-head { display: flex; justify-content: space-between; gap: 12px; font-size: 14px; color: var(--muted); margin-bottom: 10px; }
+  .cpanel-head .dim { font-family: var(--mono); font-size: 12px; color: var(--dim); }
+  .growth { display: block; width: 100%; height: auto; margin: auto 0; }
+  .growth-panel { display: flex; flex-direction: column; }
+  .growth .grid { stroke: var(--line); stroke-width: 1; }
+  .growth .xgrid { stroke: var(--line); stroke-width: 1; stroke-dasharray: 2 4; }
+  .growth .ytick { fill: var(--dim); font-family: var(--mono); font-size: 11px; text-anchor: end; }
+  .growth .xtick { fill: var(--dim); font-family: var(--mono); font-size: 11px; text-anchor: middle; }
+  @media (max-width: 640px) { .growth .ytick, .growth .xtick { font-size: 21px; } }
+  .growth .g-area { fill: var(--rose-bg); }
+  .growth .g-line { fill: none; stroke: var(--rose); stroke-width: 2; stroke-linejoin: round; }
+  .growth .g-dot { fill: var(--bg); stroke: var(--rose-text); stroke-width: 1.5; }
+  .growth .g-last { fill: var(--rose-text); }
+  .growth .g-pulse { fill: none; stroke: var(--rose-text); stroke-width: 1.5; transform-box: fill-box; transform-origin: center; animation: g-ping 2.6s ease-out infinite; }
+  @keyframes g-ping { from { opacity: 0.8; transform: scale(1); } to { opacity: 0; transform: scale(3.2); } }
+  .motion-paused .growth .g-pulse { animation: none; opacity: 0; }
+  .mix { display: flex; height: 14px; gap: 2px; border-radius: 4px; overflow: hidden; }
+  .mix i { display: block; min-width: 3px; }
+  .pills { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
+  .pill {
+    display: inline-flex; align-items: center; gap: 7px; padding: 7px 13px; border-radius: 999px; cursor: pointer;
+    border: 1px solid var(--line-strong); background: var(--surface-2); color: var(--muted);
+    font: 500 14px var(--body); transition: border-color .15s, color .15s, background .15s;
+  }
+  .pill:hover { color: var(--ink); border-color: var(--dim); }
+  .pill[aria-pressed="true"] { color: var(--ink); border-color: var(--rose); background: var(--rose-bg); }
+  .pill:focus-visible { outline: 2px solid var(--rose-text); outline-offset: 2px; }
+  .pill b { font-family: var(--mono); font-weight: 500; font-size: 12.5px; color: var(--dim); }
+  .pill[aria-pressed="true"] b { color: var(--rose-text); }
+  .sw { width: 10px; height: 10px; border-radius: 3px; flex: none; }
+  .list-bar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; margin-top: 24px; }
+  .list-bar .pills { margin-top: 0; }
+  .key { display: flex; gap: 16px; font-size: 13px; color: var(--dim); }
+  .key span { display: inline-flex; align-items: center; gap: 6px; }
+  .key i { width: 10px; height: 10px; border-radius: 3px; display: block; }
+  .s-acc { background: var(--rose); }
+  .s-wait { background: var(--amber-fill); }
+  .s-closed { background: var(--closed); }
+  .plist { margin-top: 12px; border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface); }
+  .prow {
+    display: grid; grid-template-columns: 30px minmax(0, 1fr) minmax(0, 1.6fr) 76px 62px;
+    gap: 16px; align-items: center; padding: 12px 18px; border-top: 1px solid var(--line);
+  }
+  .prow:first-child { border-top: 0; }
+  .prow[hidden] { display: none; }
+  .rank { font-family: var(--mono); font-size: 13px; color: var(--dim); text-align: right; }
+  .pid { display: flex; flex-direction: column; gap: 7px; min-width: 0; }
+  .who { color: var(--ink); font-weight: 600; overflow-wrap: anywhere; }
+  .abar { display: flex; gap: 2px; height: 5px; width: min(100%, 150px); border-radius: 3px; overflow: hidden; }
+  .abar i { display: block; min-width: 3px; }
+  .sbar-cell { min-width: 0; }
+  .sbar { display: flex; gap: 2px; height: 12px; min-width: 6px; border-radius: 3px; overflow: hidden; }
+  .sbar i { display: block; }
+  .pnum { text-align: right; font-family: var(--mono); font-size: 13px; color: var(--dim); white-space: nowrap; }
+  .pnum b { font-weight: 600; font-size: 15px; color: var(--rose-text); margin-right: 5px; }
+  .since { font-family: var(--mono); font-size: 13px; color: var(--muted); text-align: right; }
+
+  @media (max-width: 960px) {
+    .contrib-top { grid-template-columns: 1fr; }
+    .ctiles { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  }
+  @media (max-width: 640px) {
+    .ctiles { grid-template-columns: 1fr 1fr; }
+    .prow { grid-template-columns: 22px minmax(0, 1fr) auto; row-gap: 8px; padding: 12px 14px; }
+    .prow .sbar-cell { grid-column: 2 / -1; }
+    .prow .pnum { grid-column: 3; grid-row: 1; }
+    .prow .since { display: none; }
+    .key { width: 100%; }
+  }
+
+  /* gallery */
+  .gallery { margin-top: 26px; display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 18px; }
+  .shot { border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface); overflow: hidden; }
+  .shot a { display: block; background: #0b0c0d; }
+  .shot img { display: block; width: 100%; aspect-ratio: 16 / 9; object-fit: cover; }
+  .shot-body { padding: 12px 14px 14px; }
+  .shot-cap { font-size: 15px; color: var(--ink); line-height: 1.45; }
+  .shot-meta { margin-top: 6px; font-family: var(--mono); font-size: 12px; color: var(--dim); }
+  .stop-chip {
+    display: block; width: fit-content; margin-top: 8px; padding: 1px 6px; border-radius: 4px; background: var(--rose-bg);
+    color: var(--rose-text); font-family: var(--mono); font-size: 11.5px;
+  }
+  .empty {
+    margin-top: 26px; padding: 44px 24px; border: 1px dashed var(--line-strong); border-radius: var(--radius);
+    text-align: center; color: var(--muted);
+  }
+  .empty strong { display: block; color: var(--ink); font-size: 17px; margin-bottom: 4px; }
+
+</style>
+</head>
+<body>
+<!--SCENE-->
+<div class="scene" id="scene" aria-hidden="true">
+  <div class="scene-night"></div>
+  <div class="scene-stars" id="sceneStars"></div>
+  <div class="scene-haze h1"></div>
+  <div class="scene-haze h2"></div>
+  <div class="scene-glow"></div>
+  <div class="scene-sun" id="sceneSun"></div>
+  <svg class="scene-layer far" id="layerFar" viewBox="0 0 1600 420" preserveAspectRatio="xMidYMax slice"></svg>
+  <svg class="scene-layer mid" id="layerMid" viewBox="0 0 1600 320" preserveAspectRatio="xMidYMax slice"></svg>
+  <svg class="scene-layer near" id="layerNear" viewBox="0 0 1600 260" preserveAspectRatio="xMidYMax slice"></svg>
+  <div class="scene-shade"></div>
+</div>
+<script>
+(() => {
+  /* Original silhouettes, drawn for the real size of each layer (nothing is cropped), from a fixed seed. */
+  const NS = "http://www.w3.org/2000/svg";
+  const still = /[?&]still\b/.test(location.search);
+  let seed = 1;
+  const rnd = () => { seed = (seed * 1664525 + 1013904223) >>> 0; return seed / 4294967296; };
+  const pick = (a, b) => a + (b - a) * rnd();
+  const f = v => Math.round(v * 10) / 10;
+  const mk = (tag, attrs, parent) => {
+    const n = document.createElementNS(NS, tag);
+    for (const k in attrs) n.setAttribute(k, attrs[k]);
+    if (parent) parent.appendChild(n);
+    return n;
+  };
+  const rect = (x, y, w, h) => `M${f(x)},${f(y)}h${f(w)}v${f(h)}h${f(-w)}Z`;
+
+  function defs(svg, id, top, bottom) {
+    const d = mk("defs", {}, svg);
+    const g = mk("linearGradient", { id: "g" + id, x1: 0, y1: 0, x2: 0, y2: 1 }, d);
+    mk("stop", { offset: "0", "stop-color": top }, g);
+    mk("stop", { offset: "1", "stop-color": bottom }, g);
+    const fl = mk("filter", { id: "glow" + id, x: "-50%", y: "-50%", width: "200%", height: "200%" }, d);
+    mk("feGaussianBlur", { stdDeviation: "2.2", result: "b" }, fl);
+    const m = mk("feMerge", {}, fl);
+    mk("feMergeNode", { in: "b" }, m);
+    mk("feMergeNode", { in: "SourceGraphic" }, m);
+  }
+
+  /* A tower: setbacks, roof gear, a lit edge facing the sun, floors of windows. */
+  function tower(o, x, w, h, H, W, opt) {
+    const tiers = h > opt.tall * 0.55 ? 1 + Math.floor(pick(0, 3)) : 1;
+    let d = "", y = H, cw = w, cx = x, tierTops = [];
+    const tierH = h / tiers;
+    for (let t = 0; t < tiers; t++) {
+      const th = t === tiers - 1 ? h - tierH * t : tierH * pick(0.9, 1.1);
+      const top = y - th;
+      d += rect(cx, top, cw, y - top);
+      tierTops.push([cx, top, cw, y]);
+      y = top;
+      const shrink = cw * pick(0.12, 0.22);
+      cx += shrink / 2; cw -= shrink;
+    }
+    const [rx, rtop, rw] = tierTops[tierTops.length - 1];
+    const roof = rnd();
+    if (roof < 0.22) {                     // spire
+      d += `M${f(rx + rw * 0.3)},${f(rtop)}L${f(rx + rw / 2)},${f(rtop - pick(16, 40))}L${f(rx + rw * 0.7)},${f(rtop)}Z`;
+    } else if (roof < 0.45 && rw > 26) {   // water tank on legs
+      const tx = rx + pick(4, rw - 18);
+      d += rect(tx, rtop - 13, 12, 8) + rect(tx + 1, rtop - 5, 1.6, 5) + rect(tx + 9.4, rtop - 5, 1.6, 5);
+      d += `M${f(tx)},${f(rtop - 13)}L${f(tx + 6)},${f(rtop - 17)}L${f(tx + 12)},${f(rtop - 13)}Z`;
+    } else if (roof < 0.7) {               // roof boxes
+      d += rect(rx + rw * 0.15, rtop - 6, rw * 0.3, 6) + rect(rx + rw * 0.6, rtop - 4, rw * 0.22, 4);
+    }
+    o.body += d;
+    let mastTop = null;
+    if (h > opt.tall * 0.75 && rnd() < 0.75) {
+      const mx = rx + rw / 2, mh = pick(22, 46);
+      o.mast += rect(mx - 1.5, rtop - mh, 3, mh) + rect(mx - 4, rtop - mh * 0.55, 8, 1.6) + rect(mx - 3, rtop - mh * 0.8, 6, 1.4);
+      mastTop = [mx, rtop - mh];
+    }
+    // the side facing the sun catches a thin warm edge
+    const sunSide = x + w / 2 < W / 2 ? 1 : -1;
+    for (const [tx, ttop, tw, tb] of tierTops) {
+      const ex = sunSide > 0 ? tx + tw - 2 : tx;
+      o.rim += rect(ex, ttop, 2, (tb - ttop) * 0.75);
+    }
+    // windows: a grid per building, lit in floors and bands
+    const gx = pick(opt.win[0], opt.win[1]), gy = gx * pick(1.15, 1.5);
+    const ww = gx * pick(0.35, 0.6), wh = gy * pick(0.45, 0.6);
+    const lit = pick(0.08, 0.42);
+    for (const [tx, ttop, tw, tb] of tierTops) {
+      for (let wy = ttop + gy * 0.8; wy < tb - gy; wy += gy) {
+        const band = rnd() < 0.18 ? 2.2 : rnd() < 0.35 ? 0 : 1;
+        for (let wx = tx + gx * 0.6; wx < tx + tw - gx * 0.6; wx += gx) {
+          if (rnd() < lit * band) {
+            const c = rnd();
+            const key = c < 0.06 ? "winR" : c < 0.1 ? "winT" : "win";
+            o[key] += rect(wx, wy, ww, wh);
+            if (o.flick < opt.flicker && rnd() < 0.05) o.flickers.push([wx, wy, ww, wh]), o.flick++;
+          }
+        }
+      }
+    }
+    if (opt.neon && rnd() < opt.neon && h > opt.tall * 0.5) {
+      const nx = sunSide > 0 ? x + 3 : x + w - 5.5;
+      o.neon.push([nx, H - h * pick(0.85, 0.95), h * pick(0.4, 0.7), rnd() < 0.6 ? "#ff5c9a" : "#5ee0d2"]);
+    }
+    if (opt.signs && rnd() < opt.signs && w > 50) {
+      o.signs.push([x + w * 0.18, H - h + pick(10, 24), w * 0.64, pick(8, 12), rnd() < 0.5 ? "#ff5c9a" : "#ffb35c"]);
+    }
+    return mastTop;
+  }
+
+  /* A palm: slim tapering trunk, a crown of feathery drooping fronds, coconuts. */
+  function palm(g, x, base, h, lean, s) {
+    const tx = x + lean, ty = base - h;
+    const w0 = 7 * s, w1 = 3.2 * s, bend = lean * 0.45 + pick(-6, 6) * s;
+    let d = `M${f(x - w0)},${f(base)}Q${f(x + bend - w0 * 0.6)},${f(base - h * 0.5)} ${f(tx - w1)},${f(ty)}` +
+            `L${f(tx + w1)},${f(ty)}Q${f(x + bend + w0 * 0.6)},${f(base - h * 0.5)} ${f(x + w0)},${f(base)}Z`;
+    const fronds = 12;
+    for (let i = 0; i < fronds; i++) {
+      const up = i % 3 === 0;
+      const a = (up ? pick(-130, -50) : (rnd() < 0.5 ? pick(-185, -140) : pick(-40, 5))) * Math.PI / 180;
+      const L = (up ? pick(48, 70) : pick(78, 112)) * s;
+      const droop = (up ? 10 : pick(30, 55)) * s;
+      const ex = tx + Math.cos(a) * L, ey = ty + Math.sin(a) * L * 0.7 + droop;
+      const cx = tx + Math.cos(a) * L * 0.55, cy = ty + Math.sin(a) * L * 0.75 - 8 * s;
+      d += `M${f(tx)},${f(ty)}Q${f(cx)},${f(cy - 2 * s)} ${f(ex)},${f(ey)}Q${f(cx)},${f(cy + 2 * s)} ${f(tx)},${f(ty + 2)}Z`;
+      const side = Math.cos(a) >= 0 ? 1 : -1;
+      for (let k = 2; k <= 14; k++) {
+        const t = k / 15, it = 1 - t;
+        const px = it * it * tx + 2 * it * t * cx + t * t * ex, py = it * it * ty + 2 * it * t * cy + t * t * ey;
+        const dx = 2 * it * (cx - tx) + 2 * t * (ex - cx), dy = 2 * it * (cy - ty) + 2 * t * (ey - cy);
+        const len = Math.hypot(dx, dy) || 1, ux = dx / len, uy = dy / len;
+        const ll = 20 * s * Math.pow(Math.sin(Math.PI * Math.min(1, t * 1.08)), 0.8) * (1 - 0.35 * t);
+        for (const sgn of [1, -1]) {
+          const nx = -uy * sgn, ny = ux * sgn;
+          const lx = px + nx * ll * 0.55 + ux * ll * 0.45, ly = py + ny * ll * 0.55 + uy * ll * 0.45 + ll * 0.55;
+          d += `M${f(px - ux * 1.6 * s)},${f(py - uy * 1.6 * s)}L${f(lx)},${f(ly)}L${f(px + ux * 1.6 * s)},${f(py + uy * 1.6 * s)}Z`;
+        }
+        void side;
+      }
+    }
+    for (let c = 0; c < 3; c++) d += `M${f(tx - 5 * s + c * 4 * s)},${f(ty + 5 * s)}a${f(2.8 * s)},${f(2.8 * s)} 0 1,0 0.1,0Z`;
+    mk("path", { d }, g);
+  }
+
+  function skyline(svg, id, W, H, opt) {
+    svg.textContent = "";
+    svg.setAttribute("viewBox", `0 0 ${f(W)} ${H}`);
+    defs(svg, id, opt.top, opt.bottom);
+    const o = { body: "", mast: "", rim: "", win: "", winR: "", winT: "", flick: 0, flickers: [], neon: [], signs: [] };
+    const masts = [];
+    let x = -10;
+    while (x < W + 10) {
+      const slim = rnd() < 0.25;
+      const w = slim ? pick(opt.w[0] * 0.6, opt.w[0]) : pick(opt.w[0], opt.w[1]);
+      let h = pick(opt.h[0], opt.h[1]);
+      if (slim) h = Math.min(opt.tall, h * pick(1.2, 1.5));
+      // taller towers cluster toward the middle, like a downtown
+      const mid = 1 - Math.min(1, Math.abs(x + w / 2 - W / 2) / (W / 2));
+      h *= 0.6 + 0.6 * mid * mid;
+      h = Math.min(opt.tall, h);
+      const m = tower(o, x, w, h, H, W, opt);
+      if (m) masts.push(m);
+      x += w + pick(-4, 5);
+    }
+    mk("path", { d: o.body, fill: `url(#g${id})` }, svg);
+    if (o.mast) mk("path", { d: o.mast, fill: opt.mastFill }, svg);
+    mk("path", { d: o.rim, class: "scene-rim" }, svg);
+    const wg = mk("g", { class: "scene-win" }, svg);
+    if (o.win) mk("path", { d: o.win }, wg);
+    if (o.winR) mk("path", { d: o.winR, class: "r" }, wg);
+    if (o.winT) mk("path", { d: o.winT, class: "t" }, wg);
+    o.flickers.forEach(([a, b, c, e]) => mk("rect", { x: f(a), y: f(b), width: f(c), height: f(e), class: "flick",
+      style: `--d:${pick(6, 14).toFixed(1)}s;--dl:${pick(0, 10).toFixed(1)}s` }, wg));
+    const ng = mk("g", { filter: `url(#glow${id})` }, svg);
+    o.neon.forEach(([a, b, h, c]) => mk("rect", { x: f(a), y: f(b), width: 2.5, height: f(h), rx: 1.2, fill: c, class: "scene-neon",
+      style: `--dl:${pick(0, 4).toFixed(1)}s` }, ng));
+    o.signs.forEach(([a, b, w, h, c]) => mk("rect", { x: f(a), y: f(b), width: f(w), height: f(h), rx: 3, fill: "#150f1b",
+      stroke: c, "stroke-width": 1.6, class: "scene-sign", style: `--dl:${pick(0, 9).toFixed(1)}s` }, ng));
+    if (opt.beacons) masts.forEach(([a, b]) => mk("circle", { class: "scene-beacon", cx: f(a), cy: f(b), r: 2.6,
+      style: `--dl:${pick(0, 2.4).toFixed(2)}s` }, svg));
+  }
+
+  const far = document.getElementById("layerFar");
+  const mid = document.getElementById("layerMid");
+  const near = document.getElementById("layerNear");
+  let builtFor = 0;
+
+  function build() {
+    const vw = innerWidth;
+    if (Math.abs(vw - builtFor) < 60) return;
+    builtFor = vw;
+    const narrow = vw < 720;
+    const size = el => { const r = el.getBoundingClientRect(); return r.width / Math.max(1, r.height); };
+    // the visible part of each 108%-wide layer is its middle 92%
+    const inset = 0.04;
+
+    seed = 20261125;
+    const fH = 420, fW = fH * size(far);
+    skyline(far, "F", fW, fH, { h: [110, 300], w: [34, 86], tall: 400, win: [7, 10], top: "#25182f", bottom: "#3b2338",
+      mastFill: "#3a2741", flicker: narrow ? 4 : 10, neon: 0.07, beacons: true });
+
+    seed = 7741;
+    const mH = 320, mW = mH * size(mid);
+    skyline(mid, "M", mW, mH, { h: [50, 170], w: [52, 130], tall: 260, win: [8, 12], top: "#1a1322", bottom: "#21182a",
+      mastFill: "#2a2033", flicker: narrow ? 2 : 6, neon: 0.05, signs: 0.12 });
+    const mp = mk("g", { class: "bld" }, mid);
+    const mc = Math.max(2, Math.round(mW / 320));
+    for (let i = 0; i < mc; i++) {
+      const s = 0.62, crown = 80 * s;
+      const lo = mW * inset + crown, hi = mW * (1 - inset) - crown;
+      palm(mp, lo + (hi - lo) * ((i + pick(0.2, 0.8)) / mc), mH, pick(130, 185), pick(-26, 26), s);
+    }
+
+    seed = 99173;
+    const nH = 260, nW = nH * size(near);
+    near.textContent = "";
+    near.setAttribute("viewBox", `0 0 ${f(nW)} ${nH}`);
+    const ng = mk("g", { class: "bld" }, near);
+    mk("path", { d: `M-20,${nH}L-20,236Q${f(nW * 0.25)},226 ${f(nW * 0.5)},232T${f(nW + 20)},229L${f(nW + 20)},${nH}Z` }, ng);
+    mk("path", { d: `M0,246L${f(nW)},246`, class: "scene-road" }, near);
+    const s = narrow ? 0.8 : 1.05, crown = 112 * s;
+    const lo = nW * inset + crown, hi = nW * (1 - inset) - crown;
+    const spots = narrow ? [0, 1] : nW > 2200 ? [0, 0.12, 0.88, 1] : [0, 0.1, 0.9, 1];
+    spots.forEach((p, i) => palm(ng, lo + (hi - lo) * p, 240, (i % 2 ? 175 : 220) * (narrow ? 0.8 : 1), (p < 0.5 ? 1 : -1) * pick(10, 30), s));
+    if (!narrow) {
+      for (let x = nW * 0.3; x < nW * 0.72; x += 230) {
+        mk("path", { d: rect(x, 150, 3, 90) + `M${f(x + 1.5)},152Q${f(x + 12)},144 ${f(x + 26)},150L${f(x + 26)},154L${f(x + 1.5)},156Z` }, ng);
+        mk("circle", { cx: f(x + 24), cy: 156, r: 2.2, class: "scene-lamp" }, near);
+      }
+    }
+  }
+  build();
+  let rt = 0;
+  addEventListener("resize", () => { clearTimeout(rt); rt = setTimeout(build, 250); });
+
+  const stars = document.getElementById("sceneStars");
+  seed = 314159;
+  for (let i = 0; i < (innerWidth < 720 ? 40 : 90); i++) {
+    const st = document.createElement("i");
+    st.style.left = pick(0, 100).toFixed(2) + "%";
+    st.style.top = pick(0, 100).toFixed(2) + "%";
+    if (rnd() < 0.25) st.style.animation = `starTwinkle ${pick(3, 8).toFixed(1)}s ease-in-out ${pick(0, 6).toFixed(1)}s infinite`;
+    else st.style.opacity = pick(0.2, 0.7).toFixed(2);
+    if (rnd() < 0.2) { st.style.width = st.style.height = "3px"; }
+    stars.appendChild(st);
+  }
+
+  /* Parallax: scrolling down the page turns dusk into night; the pointer shifts the layers. */
+  const scene = document.getElementById("scene");
+  const sun = document.getElementById("sceneSun");
+  const mobile = matchMedia("(max-width: 720px)").matches;
+  let px = 0, tpx = 0, cur = 0, raf = 0;
+  const layers = [[far, 18, 8], [mid, 46, 18], [near, 90, 34]];
+  function frame() {
+    raf = 0;
+    const max = Math.max(1, document.documentElement.scrollHeight - innerHeight);
+    const target = Math.min(1, scrollY / max);
+    cur += (target - cur) * (still ? 1 : 0.12);
+    px += (tpx - px) * (still ? 1 : 0.08);
+    scene.style.setProperty("--night", cur.toFixed(3));
+    sun.style.transform = `translate3d(${(-px * 6).toFixed(1)}px, ${(cur * 24).toFixed(2)}vh, 0)`;
+    for (const [n, k, kx] of layers) n.style.transform = `translate3d(${(-px * kx).toFixed(1)}px, ${(-cur * k * (mobile ? 0.5 : 1)).toFixed(1)}px, 0)`;
+    if (Math.abs(target - cur) > 0.0005 || Math.abs(tpx - px) > 0.002) raf = requestAnimationFrame(frame);
+  }
+  const kick = () => { if (!raf) raf = requestAnimationFrame(frame); };
+  addEventListener("scroll", kick, { passive: true });
+  addEventListener("resize", kick);
+  if (!mobile && !still) addEventListener("pointermove", e => { tpx = e.clientX / innerWidth - 0.5; kick(); }, { passive: true });
+  frame();
+
+  /* Card spotlight follows the pointer. */
+  if (!still) document.addEventListener("pointermove", e => {
+    const card = e.target.closest && e.target.closest(".ladder-card, .matrix-box, .parts-col, .approach-box, .panel");
+    if (!card) return;
+    const r = card.getBoundingClientRect();
+    card.style.setProperty("--mx", (e.clientX - r.left) + "px");
+    card.style.setProperty("--my", (e.clientY - r.top) + "px");
+  }, { passive: true });
+})();
+</script>
+<!--/SCENE-->
+<div class="horizon" aria-hidden="true"></div>
+<header class="wrap topbar sub">
+  <div class="brand">
+    <img class="brand-logo" src="data:image/png;base64,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" alt="Project Leonardo" width="138" height="64">
+    <span class="brand-tag">PC port status</span>
+  </div>
+  <nav class="site-nav" aria-label="Pages"><a href="index.html">Status</a><a href="contributors.html" aria-current="page">Contributors</a></nav>
+  <a class="motion-btn discord-btn" href="https://discord.gg/cDGGsTy4" target="_blank" rel="noopener"><svg width="16" height="12" viewBox="0 0 127.14 96.36" fill="currentColor" aria-hidden="true"><path d="M107.7,8.07A105.15,105.15,0,0,0,81.47,0a72.06,72.06,0,0,0-3.36,6.83A97.68,97.68,0,0,0,49,6.83,72.37,72.37,0,0,0,45.64,0,105.89,105.89,0,0,0,19.39,8.09C2.79,32.65-1.71,56.6.54,80.21h0A105.73,105.73,0,0,0,32.71,96.36,77.7,77.7,0,0,0,39.6,85.25a68.42,68.42,0,0,1-10.85-5.18c.91-.66,1.8-1.34,2.66-2a75.57,75.57,0,0,0,64.32,0c.87.71,1.76,1.39,2.66,2a68.68,68.68,0,0,1-10.87,5.19,77,77,0,0,0,6.89,11.1A105.25,105.25,0,0,0,126.6,80.22h0C129.24,52.84,122.09,29.11,107.7,8.07ZM42.45,65.69C36.18,65.69,31,60,31,53s5-12.74,11.43-12.74S54,46,53.89,53,48.84,65.69,42.45,65.69Zm42.24,0C78.41,65.69,73.25,60,73.25,53s5-12.74,11.44-12.74S96.23,46,96.12,53,91.08,65.69,84.69,65.69Z"/></svg>Discord</a>
+</header>
+<!--EARLY-->
+<div class="wrap early-wrap">
+  <p class="early-note"><span class="early-tag">Early version</span> We're doing our best to keep this site updated so you're always up to date.</p>
+</div>
+<!--/EARLY-->
+<main>
+  <div class="wrap page-head">
+    <h1 class="page-title">Contributors</h1>
+    <p class="page-lead">Everyone who has sent a change to Leonardo, by GitHub username.</p>
+  </div>
+  <section class="wrap contrib-top" style="padding-top:0">
+    <div class="ctiles">
+      <div class="ctile"><span class="cbig">41</span><span class="clab">people</span>
+        <span class="csub">1 new in the last 6 hours</span></div>
+      <div class="ctile"><span class="cbig">724</span><span class="clab">changes sent</span>
+        <span class="csub">45 in the last 6 hours</span></div>
+      <div class="ctile"><span class="cbig acc">522</span><span class="clab">accepted</span>
+        <span class="csub">72% of everything sent</span></div>
+      <div class="ctile"><span class="cbig wait">43</span><span class="clab">waiting for review</span>
+        <span class="csub">159 closed without being accepted</span></div>
+    </div>
+    <div class="cpanel growth-panel">
+      <div class="cpanel-head"><span>People sending changes since Leonardo opened</span><span class="dim">UTC</span></div>
+      <svg class="growth" viewBox="0 0 720 210" role="img" aria-label="People who have sent a change: 41 since Leonardo opened"><line class="grid" x1="40" x2="704" y1="180.0" y2="180.0"/><text class="ytick" x="32" y="184.0">0</text><line class="grid" x1="40" x2="704" y1="143.1" y2="143.1"/><text class="ytick" x="32" y="147.1">10</text><line class="grid" x1="40" x2="704" y1="106.2" y2="106.2"/><text class="ytick" x="32" y="110.2">20</text><line class="grid" x1="40" x2="704" y1="69.3" y2="69.3"/><text class="ytick" x="32" y="73.3">30</text><line class="grid" x1="40" x2="704" y1="32.4" y2="32.4"/><text class="ytick" x="32" y="36.4">40</text><line class="xgrid" x1="45.6" x2="45.6" y1="14" y2="180"/><text class="xtick" x="45.6" y="202" style="text-anchor:start">24 Nov</text><line class="xgrid" x1="121.6" x2="121.6" y1="14" y2="180"/><text class="xtick" x="121.6" y="202">06:00</text><line class="xgrid" x1="197.5" x2="197.5" y1="14" y2="180"/><text class="xtick" x="197.5" y="202">12:00</text><line class="xgrid" x1="273.5" x2="273.5" y1="14" y2="180"/><text class="xtick" x="273.5" y="202">18:00</text><line class="xgrid" x1="349.4" x2="349.4" y1="14" y2="180"/><text class="xtick" x="349.4" y="202">25 Nov</text><line class="xgrid" x1="425.3" x2="425.3" y1="14" y2="180"/><text class="xtick" x="425.3" y="202">06:00</text><line class="xgrid" x1="501.3" x2="501.3" y1="14" y2="180"/><text class="xtick" x="501.3" y="202">12:00</text><line class="xgrid" x1="577.2" x2="577.2" y1="14" y2="180"/><text class="xtick" x="577.2" y="202">18:00</text><line class="xgrid" x1="653.2" x2="653.2" y1="14" y2="180"/><text class="xtick" x="653.2" y="202">26 Nov</text><polygon class="g-area" points="40.0,180.0 40.0,180.0 40.0,180.0 40.0,176.3 40.8,176.3 40.8,172.6 45.9,172.6 45.9,168.9 47.1,168.9 47.1,165.2 49.0,165.2 49.0,161.6 50.4,161.6 50.4,157.9 56.4,157.9 56.4,154.2 58.5,154.2 58.5,150.5 59.1,150.5 59.1,146.8 69.4,146.8 69.4,143.1 74.6,143.1 74.6,139.4 77.7,139.4 77.7,135.7 79.5,135.7 79.5,132.0 81.3,132.0 81.3,128.4 83.9,128.4 83.9,124.7 93.4,124.7 93.4,121.0 141.5,121.0 141.5,117.3 154.0,117.3 154.0,113.6 170.6,113.6 170.6,109.9 185.5,109.9 185.5,106.2 186.6,106.2 186.6,102.5 194.4,102.5 194.4,98.8 194.7,98.8 194.7,95.2 206.4,95.2 206.4,91.5 214.0,91.5 214.0,87.8 216.4,87.8 216.4,84.1 224.3,84.1 224.3,80.4 228.7,80.4 228.7,76.7 237.7,76.7 237.7,73.0 264.3,73.0 264.3,69.3 278.2,69.3 278.2,65.6 280.8,65.6 280.8,62.0 281.5,62.0 281.5,58.3 294.5,58.3 294.5,54.6 326.0,54.6 326.0,50.9 425.3,50.9 425.3,47.2 457.4,47.2 457.4,43.5 477.7,43.5 477.7,39.8 484.8,39.8 484.8,36.1 571.4,36.1 571.4,32.4 643.4,32.4 643.4,28.8 704.0,28.8 704.0,180.0"/><polyline class="g-line" points="40.0,180.0 40.0,180.0 40.0,176.3 40.8,176.3 40.8,172.6 45.9,172.6 45.9,168.9 47.1,168.9 47.1,165.2 49.0,165.2 49.0,161.6 50.4,161.6 50.4,157.9 56.4,157.9 56.4,154.2 58.5,154.2 58.5,150.5 59.1,150.5 59.1,146.8 69.4,146.8 69.4,143.1 74.6,143.1 74.6,139.4 77.7,139.4 77.7,135.7 79.5,135.7 79.5,132.0 81.3,132.0 81.3,128.4 83.9,128.4 83.9,124.7 93.4,124.7 93.4,121.0 141.5,121.0 141.5,117.3 154.0,117.3 154.0,113.6 170.6,113.6 170.6,109.9 185.5,109.9 185.5,106.2 186.6,106.2 186.6,102.5 194.4,102.5 194.4,98.8 194.7,98.8 194.7,95.2 206.4,95.2 206.4,91.5 214.0,91.5 214.0,87.8 216.4,87.8 216.4,84.1 224.3,84.1 224.3,80.4 228.7,80.4 228.7,76.7 237.7,76.7 237.7,73.0 264.3,73.0 264.3,69.3 278.2,69.3 278.2,65.6 280.8,65.6 280.8,62.0 281.5,62.0 281.5,58.3 294.5,58.3 294.5,54.6 326.0,54.6 326.0,50.9 425.3,50.9 425.3,47.2 457.4,47.2 457.4,43.5 477.7,43.5 477.7,39.8 484.8,39.8 484.8,36.1 571.4,36.1 571.4,32.4 643.4,32.4 643.4,28.8 704.0,28.8"/><circle class="g-dot" cx="40.0" cy="176.3" r="2.6"/><circle class="g-dot" cx="40.8" cy="172.6" r="2.6"/><circle class="g-dot" cx="45.9" cy="168.9" r="2.6"/><circle class="g-dot" cx="47.1" cy="165.2" r="2.6"/><circle class="g-dot" cx="49.0" cy="161.6" r="2.6"/><circle class="g-dot" cx="50.4" cy="157.9" r="2.6"/><circle class="g-dot" cx="56.4" cy="154.2" r="2.6"/><circle class="g-dot" cx="58.5" cy="150.5" r="2.6"/><circle class="g-dot" cx="59.1" cy="146.8" r="2.6"/><circle class="g-dot" cx="69.4" cy="143.1" r="2.6"/><circle class="g-dot" cx="74.6" cy="139.4" r="2.6"/><circle class="g-dot" cx="77.7" cy="135.7" r="2.6"/><circle class="g-dot" cx="79.5" cy="132.0" r="2.6"/><circle class="g-dot" cx="81.3" cy="128.4" r="2.6"/><circle class="g-dot" cx="83.9" cy="124.7" r="2.6"/><circle class="g-dot" cx="93.4" cy="121.0" r="2.6"/><circle class="g-dot" cx="141.5" cy="117.3" r="2.6"/><circle class="g-dot" cx="154.0" cy="113.6" r="2.6"/><circle class="g-dot" cx="170.6" cy="109.9" r="2.6"/><circle class="g-dot" cx="185.5" cy="106.2" r="2.6"/><circle class="g-dot" cx="186.6" cy="102.5" r="2.6"/><circle class="g-dot" cx="194.4" cy="98.8" r="2.6"/><circle class="g-dot" cx="194.7" cy="95.2" r="2.6"/><circle class="g-dot" cx="206.4" cy="91.5" r="2.6"/><circle class="g-dot" cx="214.0" cy="87.8" r="2.6"/><circle class="g-dot" cx="216.4" cy="84.1" r="2.6"/><circle class="g-dot" cx="224.3" cy="80.4" r="2.6"/><circle class="g-dot" cx="228.7" cy="76.7" r="2.6"/><circle class="g-dot" cx="237.7" cy="73.0" r="2.6"/><circle class="g-dot" cx="264.3" cy="69.3" r="2.6"/><circle class="g-dot" cx="278.2" cy="65.6" r="2.6"/><circle class="g-dot" cx="280.8" cy="62.0" r="2.6"/><circle class="g-dot" cx="281.5" cy="58.3" r="2.6"/><circle class="g-dot" cx="294.5" cy="54.6" r="2.6"/><circle class="g-dot" cx="326.0" cy="50.9" r="2.6"/><circle class="g-dot" cx="425.3" cy="47.2" r="2.6"/><circle class="g-dot" cx="457.4" cy="43.5" r="2.6"/><circle class="g-dot" cx="477.7" cy="39.8" r="2.6"/><circle class="g-dot" cx="484.8" cy="36.1" r="2.6"/><circle class="g-dot" cx="571.4" cy="32.4" r="2.6"/><circle class="g-dot" cx="643.4" cy="28.8" r="2.6"/><circle class="g-pulse" cx="643.4" cy="28.8" r="5"/><circle class="g-last" cx="643.4" cy="28.8" r="4"/></svg>
+    </div>
+  </section>
+  <section class="wrap" style="padding-top:28px">
+    <div class="cpanel">
+      <div class="cpanel-head"><span>What the 724 changes are about</span></div>
+      <div class="mix" aria-hidden="true"><i style="flex:232;background:#56ada3" title="Graphics: 232"></i><i style="flex:193;background:#7d8fd6" title="Running the game: 193"></i><i style="flex:179;background:#79b47f" title="Tools: 179"></i><i style="flex:92;background:#b48ad6" title="Shaders: 92"></i><i style="flex:27;background:#9a9ba1" title="Docs: 27"></i><i style="flex:1;background:#c2a477" title="Game files: 1"></i></div>
+      <div class="pills" id="areaPills"><button class="pill" type="button" data-area="" aria-pressed="true">Everyone</button><button class="pill" type="button" data-area="D3D" aria-pressed="false"><span class="sw" style="background:#56ada3"></span>Graphics<b>232</b></button><button class="pill" type="button" data-area="RT" aria-pressed="false"><span class="sw" style="background:#7d8fd6"></span>Running the game<b>193</b></button><button class="pill" type="button" data-area="TOOL" aria-pressed="false"><span class="sw" style="background:#79b47f"></span>Tools<b>179</b></button><button class="pill" type="button" data-area="SHADER" aria-pressed="false"><span class="sw" style="background:#b48ad6"></span>Shaders<b>92</b></button><button class="pill" type="button" data-area="DOC" aria-pressed="false"><span class="sw" style="background:#9a9ba1"></span>Docs<b>27</b></button><button class="pill" type="button" data-area="ASSET" aria-pressed="false"><span class="sw" style="background:#c2a477"></span>Game files<b>1</b></button></div>
+    </div>
+    <div class="list-bar">
+      <div class="pills" id="sortPills">
+        <button class="pill" type="button" data-sort="acc" aria-pressed="true">Most accepted</button>
+        <button class="pill" type="button" data-sort="sent" aria-pressed="false">Most sent</button>
+        <button class="pill" type="button" data-sort="new" aria-pressed="false">Newest</button>
+      </div>
+      <div class="key"><span><i class="s-acc"></i>accepted</span><span><i class="s-wait"></i>waiting</span>
+        <span><i class="s-closed"></i>closed</span></div>
+    </div>
+    <div class="plist" id="plist"><div class="prow" data-acc="86" data-sent="109" data-first="2026-11-24T01:01:01Z" data-areas="D3D TOOL SHADER RT DOC"><span class="rank">1</span><div class="pid"><span class="who">kapitche</span><span class="abar" title="Graphics 38, Running the game 38, Tools 17, Shaders 15, Docs 1" aria-label="Graphics 38, Running the game 38, Tools 17, Shaders 15, Docs 1"><i style="flex:38;background:#56ada3"></i><i style="flex:38;background:#7d8fd6"></i><i style="flex:17;background:#79b47f"></i><i style="flex:15;background:#b48ad6"></i><i style="flex:1;background:#9a9ba1"></i></span></div><div class="sbar-cell"><span class="sbar" style="width:100.0%" title="86 accepted, 3 waiting, 20 closed" aria-label="86 accepted, 3 waiting, 20 closed"><i class="s-acc" style="flex:86"></i><i class="s-wait" style="flex:3"></i><i class="s-closed" style="flex:20"></i></span></div><span class="pnum"><b>86</b><span class="of">of 109</span></span><span class="since">24 Nov</span></div><div class="prow" data-acc="44" data-sent="51" data-first="2026-11-24T09:52:26Z" data-areas="D3D TOOL SHADER RT DOC"><span class="rank">2</span><div class="pid"><span class="who">sayak-brm</span><span class="abar" title="Tools 21, Graphics 17, Running the game 9, Shaders 3, Docs 1" aria-label="Tools 21, Graphics 17, Running the game 9, Shaders 3, Docs 1"><i style="flex:21;background:#79b47f"></i><i style="flex:17;background:#56ada3"></i><i style="flex:9;background:#7d8fd6"></i><i style="flex:3;background:#b48ad6"></i><i style="flex:1;background:#9a9ba1"></i></span></div><div class="sbar-cell"><span class="sbar" style="width:46.8%" title="44 accepted, 3 waiting, 4 closed" aria-label="44 accepted, 3 waiting, 4 closed"><i class="s-acc" style="flex:44"></i><i class="s-wait" style="flex:3"></i><i class="s-closed" style="flex:4"></i></span></div><span class="pnum"><b>44</b><span class="of">of 51</span></span><span class="since">24 Nov</span></div><div class="prow" data-acc="39" data-sent="51" data-first="2026-11-23T23:33:19Z" data-areas="RT TOOL SHADER D3D DOC"><span class="rank">3</span><div class="pid"><span class="who">Vonsek</span><span class="abar" title="Running the game 19, Graphics 13, Tools 11, Shaders 4, Docs 4" aria-label="Running the game 19, Graphics 13, Tools 11, Shaders 4, Docs 4"><i style="flex:19;background:#7d8fd6"></i><i style="flex:13;background:#56ada3"></i><i style="flex:11;background:#79b47f"></i><i style="flex:4;background:#b48ad6"></i><i style="flex:4;background:#9a9ba1"></i></span></div><div class="sbar-cell"><span class="sbar" style="width:46.8%" title="39 accepted, 4 waiting, 8 closed" aria-label="39 accepted, 4 waiting, 8 closed"><i class="s-acc" style="flex:39"></i><i class="s-wait" style="flex:4"></i><i class="s-closed" style="flex:8"></i></span></div><span class="pnum"><b>39</b><span class="of">of 51</span></span><span class="since">23 Nov</span></div><div class="prow" data-acc="31" data-sent="34" data-first="2026-11-24T13:29:27Z" data-areas="RT SHADER D3D TOOL DOC"><span class="rank">4</span><div class="pid"><span class="who">sovljanskii</span><span class="abar" title="Running the game 12, Shaders 9, Graphics 8, Tools 4, Docs 1" aria-label="Running the game 12, Shaders 9, Graphics 8, Tools 4, Docs 1"><i style="flex:12;background:#7d8fd6"></i><i style="flex:9;background:#b48ad6"></i><i style="flex:8;background:#56ada3"></i><i style="flex:4;background:#79b47f"></i><i style="flex:1;background:#9a9ba1"></i></span></div><div class="sbar-cell"><span class="sbar" style="width:31.2%" title="31 accepted, 1 waiting, 2 closed" aria-label="31 accepted, 1 waiting, 2 closed"><i class="s-acc" style="flex:31"></i><i class="s-wait" style="flex:1"></i><i class="s-closed" style="flex:2"></i></span></div><span class="pnum"><b>31</b><span class="of">of 34</span></span><span class="since">24 Nov</span></div><div class="prow" data-acc="30" data-sent="35" data-first="2026-11-24T14:28:02Z" data-areas="D3D TOOL RT SHADER DOC"><span class="rank">5</span><div class="pid"><span class="who">fortkolbast1</span><span class="abar" title="Running the game 12, Graphics 9, Tools 8, Docs 5, Shaders 1" aria-label="Running the game 12, Graphics 9, Tools 8, Docs 5, Shaders 1"><i style="flex:12;background:#7d8fd6"></i><i style="flex:9;background:#56ada3"></i><i style="flex:8;background:#79b47f"></i><i style="flex:5;background:#9a9ba1"></i><i style="flex:1;background:#b48ad6"></i></span></div><div class="sbar-cell"><span class="sbar" style="width:32.1%" title="30 accepted, 3 waiting, 2 closed" aria-label="30 accepted, 3 waiting, 2 closed"><i class="s-acc" style="flex:30"></i><i class="s-wait" style="flex:3"></i><i class="s-closed" style="flex:2"></i></span></div><span class="pnum"><b>30</b><span class="of">of 35</span></span><span class="since">24 Nov</span></div><div class="prow" data-acc="21" data-sent="29" data-first="2026-11-24T08:33:31Z" data-areas="TOOL SHADER D3D DOC RT"><span class="rank">6</span><div class="pid"><span class="who">denio4321</span><span class="abar" title="Tools 13, Shaders 8, Running the game 4, Graphics 3, Docs 1" aria-label="Tools 13, Shaders 8, Running the game 4, Graphics 3, Docs 1"><i style="flex:13;background:#79b47f"></i><i style="flex:8;background:#b48ad6"></i><i style="flex:4;background:#7d8fd6"></i><i style="flex:3;background:#56ada3"></i><i style="flex:1;background:#9a9ba1"></i></span></div><div class="sbar-cell"><span class="sbar" style="width:26.6%" title="21 accepted, 4 waiting, 4 closed" aria-label="21 accepted, 4 waiting, 4 closed"><i class="s-acc" style="flex:21"></i><i class="s-wait" style="flex:4"></i><i class="s-closed" style="flex:4"></i></span></div><span class="pnum"><b>21</b><span class="of">of 29</span></span><span class="since">24 Nov</span></div><div class="prow" data-acc="21" data-sent="27" data-first="2026-11-24T00:01:23Z" data-areas="RT D3D TOOL SHADER"><span class="rank">7</span><div class="pid"><span class="who">eirik200</span><span class="abar" title="Graphics 14, Tools 6, Running the game 4, Shaders 3" aria-label="Graphics 14, Tools 6, Running the game 4, Shaders 3"><i style="flex:14;background:#56ada3"></i><i style="flex:6;background:#79b47f"></i><i style="flex:4;background:#7d8fd6"></i><i style="flex:3;background:#b48ad6"></i></span></div><div class="sbar-cell"><span class="sbar" style="width:24.8%" title="21 accepted, 3 waiting, 3 closed" aria-label="21 accepted, 3 waiting, 3 closed"><i class="s-acc" style="flex:21"></i><i class="s-wait" style="flex:3"></i><i class="s-closed" style="flex:3"></i></span></div><span class="pnum"><b>21</b><span class="of">of 27</span></span><span class="since">24 Nov</span></div><div class="prow" data-acc="21" data-sent="22" data-first="2026-11-24T02:40:21Z" data-areas="TOOL RT D3D DOC SHADER"><span class="rank">8</span><div class="pid"><span class="who">dev-ewann</span><span class="abar" title="Tools 11, Running the game 7, Graphics 2, Docs 1, Shaders 1" aria-label="Tools 11, Running the game 7, Graphics 2, Docs 1, Shaders 1"><i style="flex:11;background:#79b47f"></i><i style="flex:7;background:#7d8fd6"></i><i style="flex:2;background:#56ada3"></i><i style="flex:1;background:#9a9ba1"></i><i style="flex:1;background:#b48ad6"></i></span></div><div class="sbar-cell"><span class="sbar" style="width:20.2%" title="21 accepted, 0 waiting, 1 closed" aria-label="21 accepted, 0 waiting, 1 closed"><i class="s-acc" style="flex:21"></i><i class="s-wait" style="flex:0"></i><i class="s-closed" style="flex:1"></i></span></div><span class="pnum"><b>21</b><span class="of">of 22</span></span><span class="since">24 Nov</span></div><div class="prow" data-acc="20" data-sent="28" data-first="2026-11-24T11:45:11Z" data-areas="D3D RT TOOL"><span class="rank">9</span><div class="pid"><span class="who">Karrp0</span><span class="abar" title="Tools 12, Graphics 8, Running the game 8" aria-label="Tools 12, Graphics 8, Running the game 8"><i style="flex:12;background:#79b47f"></i><i style="flex:8;background:#56ada3"></i><i style="flex:8;background:#7d8fd6"></i></span></div><div class="sbar-cell"><span class="sbar" style="width:25.7%" title="20 accepted, 0 waiting, 8 closed" aria-label="20 accepted, 0 waiting, 8 closed"><i class="s-acc" style="flex:20"></i><i class="s-wait" style="flex:0"></i><i class="s-closed" style="flex:8"></i></span></div><span class="pnum"><b>20</b><span class="of">of 28</span></span><span class="since">24 Nov</span></div><div class="prow" data-acc="18" data-sent="23" data-first="2026-11-24T00:06:56Z" data-areas="D3D SHADER DOC RT"><span class="rank">10</span><div class="pid"><span class="who">Dom-in</span><span class="abar" title="Graphics 14, Shaders 5, Running the game 3, Docs 1" aria-label="Graphics 14, Shaders 5, Running the game 3, Docs 1"><i style="flex:14;background:#56ada3"></i><i style="flex:5;background:#b48ad6"></i><i style="flex:3;background:#7d8fd6"></i><i style="flex:1;background:#9a9ba1"></i></span></div><div class="sbar-cell"><span class="sbar" style="width:21.1%" title="18 accepted, 3 waiting, 2 closed" aria-label="18 accepted, 3 waiting, 2 closed"><i class="s-acc" style="flex:18"></i><i class="s-wait" style="flex:3"></i><i class="s-closed" style="flex:2"></i></span></div><span class="pnum"><b>18</b><span class="of">of 23</span></span><span class="since">24 Nov</span></div><div class="prow" data-acc="17" data-sent="23" data-first="2026-11-24T11:03:01Z" data-areas="D3D RT SHADER DOC"><span class="rank">11</span><div class="pid"><span class="who">MaxtorCoder</span><span class="abar" title="Graphics 12, Running the game 7, Shaders 3, Docs 1" aria-label="Graphics 12, Running the game 7, Shaders 3, Docs 1"><i style="flex:12;background:#56ada3"></i><i style="flex:7;background:#7d8fd6"></i><i style="flex:3;background:#b48ad6"></i><i style="flex:1;background:#9a9ba1"></i></span></div><div class="sbar-cell"><span class="sbar" style="width:21.1%" title="17 accepted, 1 waiting, 5 closed" aria-label="17 accepted, 1 waiting, 5 closed"><i class="s-acc" style="flex:17"></i><i class="s-wait" style="flex:1"></i><i class="s-closed" style="flex:5"></i></span></div><span class="pnum"><b>17</b><span class="of">of 23</span></span><span class="since">24 Nov</span></div><div class="prow" data-acc="15" data-sent="19" data-first="2026-11-24T00:22:36Z" data-areas="D3D RT TOOL"><span class="rank">12</span><div class="pid"><span class="who">TreXito</span><span class="abar" title="Running the game 10, Graphics 8, Tools 1" aria-label="Running the game 10, Graphics 8, Tools 1"><i style="flex:10;background:#7d8fd6"></i><i style="flex:8;background:#56ada3"></i><i style="flex:1;background:#79b47f"></i></span></div><div class="sbar-cell"><span class="sbar" style="width:17.4%" title="15 accepted, 0 waiting, 4 closed" aria-label="15 accepted, 0 waiting, 4 closed"><i class="s-acc" style="flex:15"></i><i class="s-wait" style="flex:0"></i><i class="s-closed" style="flex:4"></i></span></div><span class="pnum"><b>15</b><span class="of">of 19</span></span><span class="since">24 Nov</span></div><div class="prow" data-acc="13" data-sent="23" data-first="2026-11-24T14:07:02Z" data-areas="RT D3D TOOL SHADER DOC"><span class="rank">13</span><div class="pid"><span class="who">neeshz</span><span class="abar" title="Graphics 16, Running the game 3, Shaders 2, Tools 1, Docs 1" aria-label="Graphics 16, Running the game 3, Shaders 2, Tools 1, Docs 1"><i style="flex:16;background:#56ada3"></i><i style="flex:3;background:#7d8fd6"></i><i style="flex:2;background:#b48ad6"></i><i style="flex:1;background:#79b47f"></i><i style="flex:1;background:#9a9ba1"></i></span></div><div class="sbar-cell"><span class="sbar" style="width:21.1%" title="13 accepted, 3 waiting, 7 closed" aria-label="13 accepted, 3 waiting, 7 closed"><i class="s-acc" style="flex:13"></i><i class="s-wait" style="flex:3"></i><i class="s-closed" style="flex:7"></i></span></div><span class="pnum"><b>13</b><span class="of">of 23</span></span><span class="since">24 Nov</span></div><div class="prow" data-acc="13" data-sent="22" data-first="2026-11-24T15:10:21Z" data-areas="D3D SHADER TOOL RT"><span class="rank">14</span><div class="pid"><span class="who">Cattn</span><span class="abar" title="Tools 11, Running the game 5, Graphics 3, Shaders 3" aria-label="Tools 11, Running the game 5, Graphics 3, Shaders 3"><i style="flex:11;background:#79b47f"></i><i style="flex:5;background:#7d8fd6"></i><i style="flex:3;background:#56ada3"></i><i style="flex:3;background:#b48ad6"></i></span></div><div class="sbar-cell"><span class="sbar" style="width:20.2%" title="13 accepted, 4 waiting, 5 closed" aria-label="13 accepted, 4 waiting, 5 closed"><i class="s-acc" style="flex:13"></i><i class="s-wait" style="flex:4"></i><i class="s-closed" style="flex:5"></i></span></div><span class="pnum"><b>13</b><span class="of">of 22</span></span><span class="since">24 Nov</span></div><div class="prow" data-acc="13" data-sent="14" data-first="2026-11-24T11:08:29Z" data-areas="D3D RT SHADER DOC"><span class="rank">15</span><div class="pid"><span class="who">Kam471</span><span class="abar" title="Graphics 8, Running the game 2, Shaders 2, Docs 2" aria-label="Graphics 8, Running the game 2, Shaders 2, Docs 2"><i style="flex:8;background:#56ada3"></i><i style="flex:2;background:#7d8fd6"></i><i style="flex:2;background:#b48ad6"></i><i style="flex:2;background:#9a9ba1"></i></span></div><div class="sbar-cell"><span class="sbar" style="width:12.8%" title="13 accepted, 1 waiting, 0 closed" aria-label="13 accepted, 1 waiting, 0 closed"><i class="s-acc" style="flex:13"></i><i class="s-wait" style="flex:1"></i><i class="s-closed" style="flex:0"></i></span></div><span class="pnum"><b>13</b><span class="of">of 14</span></span><span class="since">24 Nov</span></div><div class="prow" data-acc="12" data-sent="16" data-first="2026-11-24T12:42:15Z" data-areas="D3D SHADER TOOL"><span class="rank">16</span><div class="pid"><span class="who">xDeadXD</span><span class="abar" title="Tools 9, Graphics 5, Shaders 2" aria-label="Tools 9, Graphics 5, Shaders 2"><i style="flex:9;background:#79b47f"></i><i style="flex:5;background:#56ada3"></i><i style="flex:2;background:#b48ad6"></i></span></div><div class="sbar-cell"><span class="sbar" style="width:14.7%" title="12 accepted, 0 waiting, 4 closed" aria-label="12 accepted, 0 waiting, 4 closed"><i class="s-acc" style="flex:12"></i><i class="s-wait" style="flex:0"></i><i class="s-closed" style="flex:4"></i></span></div><span class="pnum"><b>12</b><span class="of">of 16</span></span><span class="since">24 Nov</span></div><div class="prow" data-acc="10" data-sent="17" data-first="2026-11-24T17:16:42Z" data-areas="D3D RT TOOL DOC SHADER"><span class="rank">17</span><div class="pid"><span class="who">pyramoe</span><span class="abar" title="Running the game 5, Docs 5, Tools 4, Shaders 2, Graphics 1" aria-label="Running the game 5, Docs 5, Tools 4, Shaders 2, Graphics 1"><i style="flex:5;background:#7d8fd6"></i><i style="flex:5;background:#9a9ba1"></i><i style="flex:4;background:#79b47f"></i><i style="flex:2;background:#b48ad6"></i><i style="flex:1;background:#56ada3"></i></span></div><div class="sbar-cell"><span class="sbar" style="width:15.6%" title="10 accepted, 0 waiting, 7 closed" aria-label="10 accepted, 0 waiting, 7 closed"><i class="s-acc" style="flex:10"></i><i class="s-wait" style="flex:0"></i><i class="s-closed" style="flex:7"></i></span></div><span class="pnum"><b>10</b><span class="of">of 17</span></span><span class="since">24 Nov</span></div><div class="prow" data-acc="10" data-sent="13" data-first="2026-11-24T18:38:16Z" data-areas="TOOL RT D3D"><span class="rank">18</span><div class="pid"><span class="who">LaugeM</span><span class="abar" title="Running the game 9, Graphics 3, Tools 1" aria-label="Running the game 9, Graphics 3, Tools 1"><i style="flex:9;background:#7d8fd6"></i><i style="flex:3;background:#56ada3"></i><i style="flex:1;background:#79b47f"></i></span></div><div class="sbar-cell"><span class="sbar" style="width:11.9%" title="10 accepted, 1 waiting, 2 closed" aria-label="10 accepted, 1 waiting, 2 closed"><i class="s-acc" style="flex:10"></i><i class="s-wait" style="flex:1"></i><i class="s-closed" style="flex:2"></i></span></div><span class="pnum"><b>10</b><span class="of">of 13</span></span><span class="since">24 Nov</span></div><div class="prow" data-acc="9" data-sent="15" data-first="2026-11-24T02:32:05Z" data-areas="RT D3D TOOL"><span class="rank">19</span><div class="pid"><span class="who">SuarezPM</span><span class="abar" title="Running the game 12, Tools 2, Graphics 1" aria-label="Running the game 12, Tools 2, Graphics 1"><i style="flex:12;background:#7d8fd6"></i><i style="flex:2;background:#79b47f"></i><i style="flex:1;background:#56ada3"></i></span></div><div class="sbar-cell"><span class="sbar" style="width:13.8%" title="9 accepted, 0 waiting, 6 closed" aria-label="9 accepted, 0 waiting, 6 closed"><i class="s-acc" style="flex:9"></i><i class="s-wait" style="flex:0"></i><i class="s-closed" style="flex:6"></i></span></div><span class="pnum"><b>9</b><span class="of">of 15</span></span><span class="since">24 Nov</span></div><div class="prow" data-acc="9" data-sent="9" data-first="2026-11-25T08:32:01Z" data-areas="RT TOOL SHADER"><span class="rank">20</span><div class="pid"><span class="who">Silliana</span><span class="abar" title="Tools 5, Running the game 2, Shaders 2" aria-label="Tools 5, Running the game 2, Shaders 2"><i style="flex:5;background:#79b47f"></i><i style="flex:2;background:#7d8fd6"></i><i style="flex:2;background:#b48ad6"></i></span></div><div class="sbar-cell"><span class="sbar" style="width:8.3%" title="9 accepted, 0 waiting, 0 closed" aria-label="9 accepted, 0 waiting, 0 closed"><i class="s-acc" style="flex:9"></i><i class="s-wait" style="flex:0"></i><i class="s-closed" style="flex:0"></i></span></div><span class="pnum"><b>9</b><span class="of">of 9</span></span><span class="since">25 Nov</span></div><div class="prow" data-acc="8" data-sent="11" data-first="2026-11-24T00:15:57Z" data-areas="D3D RT SHADER DOC"><span class="rank">21</span><div class="pid"><span class="who">raxjinn</span><span class="abar" title="Graphics 5, Running the game 4, Shaders 1, Docs 1" aria-label="Graphics 5, Running the game 4, Shaders 1, Docs 1"><i style="flex:5;background:#56ada3"></i><i style="flex:4;background:#7d8fd6"></i><i style="flex:1;background:#b48ad6"></i><i style="flex:1;background:#9a9ba1"></i></span></div><div class="sbar-cell"><span class="sbar" style="width:10.1%" title="8 accepted, 0 waiting, 3 closed" aria-label="8 accepted, 0 waiting, 3 closed"><i class="s-acc" style="flex:8"></i><i class="s-wait" style="flex:0"></i><i class="s-closed" style="flex:3"></i></span></div><span class="pnum"><b>8</b><span class="of">of 11</span></span><span class="since">24 Nov</span></div><div class="prow" data-acc="7" data-sent="12" data-first="2026-11-24T19:39:59Z" data-areas="RT SHADER D3D TOOL"><span class="rank">22</span><div class="pid"><span class="who">HugoCataldi</span><span class="abar" title="Graphics 8, Tools 2, Running the game 1, Shaders 1" aria-label="Graphics 8, Tools 2, Running the game 1, Shaders 1"><i style="flex:8;background:#56ada3"></i><i style="flex:2;background:#79b47f"></i><i style="flex:1;background:#7d8fd6"></i><i style="flex:1;background:#b48ad6"></i></span></div><div class="sbar-cell"><span class="sbar" style="width:11.0%" title="7 accepted, 3 waiting, 2 closed" aria-label="7 accepted, 3 waiting, 2 closed"><i class="s-acc" style="flex:7"></i><i class="s-wait" style="flex:3"></i><i class="s-closed" style="flex:2"></i></span></div><span class="pnum"><b>7</b><span class="of">of 12</span></span><span class="since">24 Nov</span></div><div class="prow" data-acc="6" data-sent="6" data-first="2026-11-24T03:46:41Z" data-areas="SHADER TOOL RT DOC"><span class="rank">23</span><div class="pid"><span class="who">controldebils</span><span class="abar" title="Shaders 2, Tools 2, Running the game 1, Docs 1" aria-label="Shaders 2, Tools 2, Running the game 1, Docs 1"><i style="flex:2;background:#b48ad6"></i><i style="flex:2;background:#79b47f"></i><i style="flex:1;background:#7d8fd6"></i><i style="flex:1;background:#9a9ba1"></i></span></div><div class="sbar-cell"><span class="sbar" style="width:5.5%" title="6 accepted, 0 waiting, 0 closed" aria-label="6 accepted, 0 waiting, 0 closed"><i class="s-acc" style="flex:6"></i><i class="s-wait" style="flex:0"></i><i class="s-closed" style="flex:0"></i></span></div><span class="pnum"><b>6</b><span class="of">of 6</span></span><span class="since">24 Nov</span></div><div class="prow" data-acc="5" data-sent="13" data-first="2026-11-25T10:08:18Z" data-areas="TOOL"><span class="rank">24</span><div class="pid"><span class="who">dandasma</span><span class="abar" title="Tools 13" aria-label="Tools 13"><i style="flex:13;background:#79b47f"></i></span></div><div class="sbar-cell"><span class="sbar" style="width:11.9%" title="5 accepted, 1 waiting, 7 closed" aria-label="5 accepted, 1 waiting, 7 closed"><i class="s-acc" style="flex:5"></i><i class="s-wait" style="flex:1"></i><i class="s-closed" style="flex:7"></i></span></div><span class="pnum"><b>5</b><span class="of">of 13</span></span><span class="since">25 Nov</span></div><div class="prow" data-acc="5" data-sent="8" data-first="2026-11-24T01:52:46Z" data-areas="D3D SHADER TOOL DOC"><span class="rank">25</span><div class="pid"><span class="who">Etoile-Bleu</span><span class="abar" title="Tools 4, Graphics 2, Shaders 1, Docs 1" aria-label="Tools 4, Graphics 2, Shaders 1, Docs 1"><i style="flex:4;background:#79b47f"></i><i style="flex:2;background:#56ada3"></i><i style="flex:1;background:#b48ad6"></i><i style="flex:1;background:#9a9ba1"></i></span></div><div class="sbar-cell"><span class="sbar" style="width:7.3%" title="5 accepted, 0 waiting, 3 closed" aria-label="5 accepted, 0 waiting, 3 closed"><i class="s-acc" style="flex:5"></i><i class="s-wait" style="flex:0"></i><i class="s-closed" style="flex:3"></i></span></div><span class="pnum"><b>5</b><span class="of">of 8</span></span><span class="since">24 Nov</span></div><div class="prow" data-acc="5" data-sent="6" data-first="2026-11-24T11:46:53Z" data-areas="D3D TOOL"><span class="rank">26</span><div class="pid"><span class="who">LatukaTV</span><span class="abar" title="Tools 5, Graphics 1" aria-label="Tools 5, Graphics 1"><i style="flex:5;background:#79b47f"></i><i style="flex:1;background:#56ada3"></i></span></div><div class="sbar-cell"><span class="sbar" style="width:5.5%" title="5 accepted, 0 waiting, 1 closed" aria-label="5 accepted, 0 waiting, 1 closed"><i class="s-acc" style="flex:5"></i><i class="s-wait" style="flex:0"></i><i class="s-closed" style="flex:1"></i></span></div><span class="pnum"><b>5</b><span class="of">of 6</span></span><span class="since">24 Nov</span></div><div class="prow" data-acc="5" data-sent="6" data-first="2026-11-24T13:17:56Z" data-areas="D3D TOOL RT SHADER"><span class="rank">27</span><div class="pid"><span class="who">svds12343</span><span class="abar" title="Graphics 2, Shaders 2, Tools 1, Running the game 1" aria-label="Graphics 2, Shaders 2, Tools 1, Running the game 1"><i style="flex:2;background:#56ada3"></i><i style="flex:2;background:#b48ad6"></i><i style="flex:1;background:#79b47f"></i><i style="flex:1;background:#7d8fd6"></i></span></div><div class="sbar-cell"><span class="sbar" style="width:5.5%" title="5 accepted, 0 waiting, 1 closed" aria-label="5 accepted, 0 waiting, 1 closed"><i class="s-acc" style="flex:5"></i><i class="s-wait" style="flex:0"></i><i class="s-closed" style="flex:1"></i></span></div><span class="pnum"><b>5</b><span class="of">of 6</span></span><span class="since">24 Nov</span></div><div class="prow" data-acc="4" data-sent="4" data-first="2026-11-25T17:32:33Z" data-areas="TOOL RT"><span class="rank">28</span><div class="pid"><span class="who">twofoldg</span><span class="abar" title="Running the game 3, Tools 1" aria-label="Running the game 3, Tools 1"><i style="flex:3;background:#7d8fd6"></i><i style="flex:1;background:#79b47f"></i></span></div><div class="sbar-cell"><span class="sbar" style="width:3.7%" title="4 accepted, 0 waiting, 0 closed" aria-label="4 accepted, 0 waiting, 0 closed"><i class="s-acc" style="flex:4"></i><i class="s-wait" style="flex:0"></i><i class="s-closed" style="flex:0"></i></span></div><span class="pnum"><b>4</b><span class="of">of 4</span></span><span class="since">25 Nov</span></div><div class="prow" data-acc="3" data-sent="8" data-first="2026-11-24T07:34:15Z" data-areas="SHADER D3D RT"><span class="rank">29</span><div class="pid"><span class="who">theoneandonlyenx</span><span class="abar" title="Shaders 6, Graphics 1, Running the game 1" aria-label="Shaders 6, Graphics 1, Running the game 1"><i style="flex:6;background:#b48ad6"></i><i style="flex:1;background:#56ada3"></i><i style="flex:1;background:#7d8fd6"></i></span></div><div class="sbar-cell"><span class="sbar" style="width:7.3%" title="3 accepted, 0 waiting, 5 closed" aria-label="3 accepted, 0 waiting, 5 closed"><i class="s-acc" style="flex:3"></i><i class="s-wait" style="flex:0"></i><i class="s-closed" style="flex:5"></i></span></div><span class="pnum"><b>3</b><span class="of">of 8</span></span><span class="since">24 Nov</span></div><div class="prow" data-acc="3" data-sent="7" data-first="2026-11-25T05:59:40Z" data-areas="RT SHADER D3D"><span class="rank">30</span><div class="pid"><span class="who">itdonerightnc</span><span class="abar" title="Shaders 3, Graphics 3, Running the game 1" aria-label="Shaders 3, Graphics 3, Running the game 1"><i style="flex:3;background:#b48ad6"></i><i style="flex:3;background:#56ada3"></i><i style="flex:1;background:#7d8fd6"></i></span></div><div class="sbar-cell"><span class="sbar" style="width:6.4%" title="3 accepted, 2 waiting, 2 closed" aria-label="3 accepted, 2 waiting, 2 closed"><i class="s-acc" style="flex:3"></i><i class="s-wait" style="flex:2"></i><i class="s-closed" style="flex:2"></i></span></div><span class="pnum"><b>3</b><span class="of">of 7</span></span><span class="since">25 Nov</span></div><div class="prow" data-acc="3" data-sent="3" data-first="2026-11-24T00:51:16Z" data-areas="RT D3D"><span class="rank">31</span><div class="pid"><span class="who">eyyun</span><span class="abar" title="Running the game 2, Graphics 1" aria-label="Running the game 2, Graphics 1"><i style="flex:2;background:#7d8fd6"></i><i style="flex:1;background:#56ada3"></i></span></div><div class="sbar-cell"><span class="sbar" style="width:2.8%" title="3 accepted, 0 waiting, 0 closed" aria-label="3 accepted, 0 waiting, 0 closed"><i class="s-acc" style="flex:3"></i><i class="s-wait" style="flex:0"></i><i class="s-closed" style="flex:0"></i></span></div><span class="pnum"><b>3</b><span class="of">of 3</span></span><span class="since">24 Nov</span></div><div class="prow" data-acc="3" data-sent="3" data-first="2026-11-24T18:34:36Z" data-areas="SHADER TOOL D3D"><span class="rank">32</span><div class="pid"><span class="who">AmateurWizrd</span><span class="abar" title="Shaders 1, Tools 1, Graphics 1" aria-label="Shaders 1, Tools 1, Graphics 1"><i style="flex:1;background:#b48ad6"></i><i style="flex:1;background:#79b47f"></i><i style="flex:1;background:#56ada3"></i></span></div><div class="sbar-cell"><span class="sbar" style="width:2.8%" title="3 accepted, 0 waiting, 0 closed" aria-label="3 accepted, 0 waiting, 0 closed"><i class="s-acc" style="flex:3"></i><i class="s-wait" style="flex:0"></i><i class="s-closed" style="flex:0"></i></span></div><span class="pnum"><b>3</b><span class="of">of 3</span></span><span class="since">24 Nov</span></div><div class="prow" data-acc="2" data-sent="6" data-first="2026-11-24T22:08:52Z" data-areas="D3D RT SHADER"><span class="rank">33</span><div class="pid"><span class="who">klepacek</span><span class="abar" title="Graphics 3, Running the game 2, Shaders 1" aria-label="Graphics 3, Running the game 2, Shaders 1"><i style="flex:3;background:#56ada3"></i><i style="flex:2;background:#7d8fd6"></i><i style="flex:1;background:#b48ad6"></i></span></div><div class="sbar-cell"><span class="sbar" style="width:5.5%" title="2 accepted, 1 waiting, 3 closed" aria-label="2 accepted, 1 waiting, 3 closed"><i class="s-acc" style="flex:2"></i><i class="s-wait" style="flex:1"></i><i class="s-closed" style="flex:3"></i></span></div><span class="pnum"><b>2</b><span class="of">of 6</span></span><span class="since">24 Nov</span></div><div class="prow" data-acc="2" data-sent="4" data-first="2026-11-23T23:37:03Z" data-areas="TOOL D3D"><span class="rank">34</span><div class="pid"><span class="who">Speedstu</span><span class="abar" title="Tools 3, Graphics 1" aria-label="Tools 3, Graphics 1"><i style="flex:3;background:#79b47f"></i><i style="flex:1;background:#56ada3"></i></span></div><div class="sbar-cell"><span class="sbar" style="width:3.7%" title="2 accepted, 0 waiting, 2 closed" aria-label="2 accepted, 0 waiting, 2 closed"><i class="s-acc" style="flex:2"></i><i class="s-wait" style="flex:0"></i><i class="s-closed" style="flex:2"></i></span></div><span class="pnum"><b>2</b><span class="of">of 4</span></span><span class="since">23 Nov</span></div><div class="prow" data-acc="2" data-sent="4" data-first="2026-11-24T02:17:11Z" data-areas="SHADER D3D"><span class="rank">35</span><div class="pid"><span class="who">airp1ane</span><span class="abar" title="Graphics 3, Shaders 1" aria-label="Graphics 3, Shaders 1"><i style="flex:3;background:#56ada3"></i><i style="flex:1;background:#b48ad6"></i></span></div><div class="sbar-cell"><span class="sbar" style="width:3.7%" title="2 accepted, 1 waiting, 1 closed" aria-label="2 accepted, 1 waiting, 1 closed"><i class="s-acc" style="flex:2"></i><i class="s-wait" style="flex:1"></i><i class="s-closed" style="flex:1"></i></span></div><span class="pnum"><b>2</b><span class="of">of 4</span></span><span class="since">24 Nov</span></div><div class="prow" data-acc="2" data-sent="2" data-first="2026-11-25T10:42:04Z" data-areas="TOOL"><span class="rank">36</span><div class="pid"><span class="who">TripleA26</span><span class="abar" title="Tools 2" aria-label="Tools 2"><i style="flex:2;background:#79b47f"></i></span></div><div class="sbar-cell"><span class="sbar" style="width:1.8%" title="2 accepted, 0 waiting, 0 closed" aria-label="2 accepted, 0 waiting, 0 closed"><i class="s-acc" style="flex:2"></i><i class="s-wait" style="flex:0"></i><i class="s-closed" style="flex:0"></i></span></div><span class="pnum"><b>2</b><span class="of">of 2</span></span><span class="since">25 Nov</span></div><div class="prow" data-acc="2" data-sent="2" data-first="2026-11-25T23:13:53Z" data-areas="D3D RT"><span class="rank">37</span><div class="pid"><span class="who">Jadiac5</span><span class="abar" title="Graphics 1, Running the game 1" aria-label="Graphics 1, Running the game 1"><i style="flex:1;background:#56ada3"></i><i style="flex:1;background:#7d8fd6"></i></span></div><div class="sbar-cell"><span class="sbar" style="width:1.8%" title="2 accepted, 0 waiting, 0 closed" aria-label="2 accepted, 0 waiting, 0 closed"><i class="s-acc" style="flex:2"></i><i class="s-wait" style="flex:0"></i><i class="s-closed" style="flex:0"></i></span></div><span class="pnum"><b>2</b><span class="of">of 2</span></span><span class="since">25 Nov</span></div><div class="prow" data-acc="1" data-sent="32" data-first="2026-11-24T01:03:49Z" data-areas="SHADER RT TOOL D3D ASSET"><span class="rank">38</span><div class="pid"><span class="who">alecspw</span><span class="abar" title="Graphics 15, Shaders 7, Tools 5, Running the game 4, Game files 1" aria-label="Graphics 15, Shaders 7, Tools 5, Running the game 4, Game files 1"><i style="flex:15;background:#56ada3"></i><i style="flex:7;background:#b48ad6"></i><i style="flex:5;background:#79b47f"></i><i style="flex:4;background:#7d8fd6"></i><i style="flex:1;background:#c2a477"></i></span></div><div class="sbar-cell"><span class="sbar" style="width:29.4%" title="1 accepted, 0 waiting, 31 closed" aria-label="1 accepted, 0 waiting, 31 closed"><i class="s-acc" style="flex:1"></i><i class="s-wait" style="flex:0"></i><i class="s-closed" style="flex:31"></i></span></div><span class="pnum"><b>1</b><span class="of">of 32</span></span><span class="since">24 Nov</span></div><div class="prow" data-acc="1" data-sent="3" data-first="2026-11-24T03:01:25Z" data-areas="SHADER RT D3D"><span class="rank">39</span><div class="pid"><span class="who">waltingford</span><span class="abar" title="Shaders 1, Running the game 1, Graphics 1" aria-label="Shaders 1, Running the game 1, Graphics 1"><i style="flex:1;background:#b48ad6"></i><i style="flex:1;background:#7d8fd6"></i><i style="flex:1;background:#56ada3"></i></span></div><div class="sbar-cell"><span class="sbar" style="width:2.8%" title="1 accepted, 1 waiting, 1 closed" aria-label="1 accepted, 1 waiting, 1 closed"><i class="s-acc" style="flex:1"></i><i class="s-wait" style="flex:1"></i><i class="s-closed" style="flex:1"></i></span></div><span class="pnum"><b>1</b><span class="of">of 3</span></span><span class="since">24 Nov</span></div><div class="prow" data-acc="1" data-sent="2" data-first="2026-11-24T18:22:28Z" data-areas="TOOL"><span class="rank">40</span><div class="pid"><span class="who">Faterek</span><span class="abar" title="Tools 2" aria-label="Tools 2"><i style="flex:2;background:#79b47f"></i></span></div><div class="sbar-cell"><span class="sbar" style="width:1.8%" title="1 accepted, 0 waiting, 1 closed" aria-label="1 accepted, 0 waiting, 1 closed"><i class="s-acc" style="flex:1"></i><i class="s-wait" style="flex:0"></i><i class="s-closed" style="flex:1"></i></span></div><span class="pnum"><b>1</b><span class="of">of 2</span></span><span class="since">24 Nov</span></div><div class="prow" data-acc="0" data-sent="2" data-first="2026-11-24T02:49:09Z" data-areas="D3D TOOL"><span class="rank">41</span><div class="pid"><span class="who">tupacfan04</span><span class="abar" title="Graphics 1, Tools 1" aria-label="Graphics 1, Tools 1"><i style="flex:1;background:#56ada3"></i><i style="flex:1;background:#79b47f"></i></span></div><div class="sbar-cell"><span class="sbar" style="width:1.8%" title="0 accepted, 0 waiting, 2 closed" aria-label="0 accepted, 0 waiting, 2 closed"><i class="s-acc" style="flex:0"></i><i class="s-wait" style="flex:0"></i><i class="s-closed" style="flex:2"></i></span></div><span class="pnum"><b>0</b><span class="of">of 2</span></span><span class="since">24 Nov</span></div></div>
+  </section>
+  <script>
+  (() => {
+    try { if (localStorage.getItem("leonardo-motion-paused") === "1") document.documentElement.classList.add("motion-paused"); } catch (e) {}
+    const list = document.getElementById("plist");
+    const rows = [...list.querySelectorAll(".prow")];
+    let sort = "acc", area = "";
+    const n = (r, k) => Number(r.dataset[k]);
+    const by = {
+      acc: (a, b) => n(b, "acc") - n(a, "acc") || n(b, "sent") - n(a, "sent") || a.dataset.first.localeCompare(b.dataset.first),
+      sent: (a, b) => n(b, "sent") - n(a, "sent") || n(b, "acc") - n(a, "acc") || a.dataset.first.localeCompare(b.dataset.first),
+      new: (a, b) => b.dataset.first.localeCompare(a.dataset.first),
+    };
+    function draw() {
+      let rank = 0;
+      for (const r of rows.sort(by[sort])) {
+        const show = !area || r.dataset.areas.split(" ").includes(area);
+        r.hidden = !show;
+        if (show) r.querySelector(".rank").textContent = ++rank;
+        list.appendChild(r);
+      }
+    }
+    function wire(id, key, set) {
+      const pills = [...document.getElementById(id).querySelectorAll(".pill")];
+      for (const p of pills) p.addEventListener("click", () => {
+        set(p.dataset[key]);
+        for (const q of pills) q.setAttribute("aria-pressed", String(q === p));
+        draw();
+      });
+    }
+    wire("sortPills", "sort", v => sort = v);
+    wire("areaPills", "area", v => area = v);
+  })();
+  </script>
+</main>
+<footer class="wrap">
+  <div class="legal" role="note" aria-labelledby="legalHeading">
+    <h2 class="legal-title" id="legalHeading">Legal notice</h2>
+    <p><strong>We do not condone piracy under any circumstance.</strong> Leonardo contains no game files. It is built on your own PC from your own copy of the game, and this page does not host or link to any game files.</p>
+    <p>Leonardo is an unofficial community project. It is not made, endorsed or supported by Rockstar Games or Take&#8209;Two Interactive, and all trademarks belong to their owners.</p>
+  </div>
+  <div class="foot-row">
+    <p>Questions or want to help? <a href="https://discord.gg/cDGGsTy4" target="_blank" rel="noopener">Join the Discord</a></p>
+    <p>Built: 26 November at 06:00 (local time)</p>
+  </div>
+</footer>
+</body>
+</html>
