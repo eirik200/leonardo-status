@@ -2984,7 +2984,7 @@
 <script>
 // Everything on the page comes from here. Update these numbers and redeploy.
 const DATA = {
- "updated": "2026-11-27T11:30:23Z",
+ "updated": "2026-11-27T12:31:56Z",
  "historyStarts": "2026-11-20",
  "leonardoOpened": "2026-11-23T23:33:19Z",
  "stops": [
@@ -2997,11 +2997,11 @@ const DATA = {
   "Can be finished",
   "Fully playable"
  ],
- "done": 5,
- "withFixes": 5,
+ "done": 6,
+ "withFixes": 6,
  "score": {
   "model": "PortWatch VI",
-  "note": "Best result on the main build on any PC, scored the way PortWatch VI scores builds. playable is 1: in the first mission the player is in control and the on-screen hints react to the stick (Linux on an RX 7800 XT with an Intel processor, newest main version); PortWatch's Playable asks for a character you control with the HUD working, and it counted a build whose screen was black while a player walked. On the main build the lit 3D world now draws on NVIDIA once every graphics program the run uses is built ahead (RTX 5070 Ti laptop on main at ab4fcd906, 26 November, docs/nvidia_world_recipe.md section 10: lit world in the window at 300 s and 600 s, 3 runs to the 900 s cap with no device loss), with some textures wrong and at about 0.4 frames a second, so rendering is 0.2; on other cards the main build still shows no 3D picture, and the world runs at 1 to 2 frames a second.",
+  "note": "Best result on the main build on any PC, scored the way PortWatch VI scores builds. playable is 1: in the first mission the player is in control and the on-screen hints react to the stick (Linux on an RX 7800 XT with an Intel processor, main), and on NVIDIA the lit 3D world draws on main once the graphics programs the run uses are built ahead (RTX 5070 Ti laptop, 26 November: 3 runs to the 15-minute cap with no device loss; RTX 5080 under Linux and Wine, 27 November: lit opening scene at 4 minutes with the smaller default pre-build chunks). Textures stay at low detail and some lighting is wrong, so rendering is 0.2; the world runs at about 0.4 to 2 frames a second, so fps is 1.5; runs on Linux with AMD graphics still often freeze, so stability is often. On 27 November the project moved its own stop to Playable, with bugs.",
   "ladder": {
    "loads": 1,
    "boots": 1,
@@ -3022,7 +3022,7 @@ const DATA = {
    "stability": "often"
   }
  },
- "bestOn": "Windows with an AMD processor and graphics card",
+ "bestOn": "Windows with an NVIDIA graphics card",
  "platforms": [
   [
    "Windows",
@@ -3033,20 +3033,20 @@ const DATA = {
   [
    "NVIDIA graphics",
    "any processor",
-   5,
-   5
+   6,
+   6
   ],
   [
    "Intel processor",
    "any graphics",
-   5,
-   5
+   6,
+   6
   ],
   [
    "Linux",
    "through Wine, AMD graphics",
    5,
-   5
+   6
   ],
   [
    "Intel graphics",
@@ -3057,47 +3057,52 @@ const DATA = {
   [
    "Mac",
    "Apple chip, through Wine",
-   3,
-   3
+   4,
+   4
   ]
  ],
  "parts": [
   [
    "Loading the game",
    "ok",
-   "The game starts and gets through loading, in about 7.5 minutes at best."
+   "The game starts and gets through loading, in about 7.5 minutes at best. On NVIDIA the graphics programs are first built ahead of time, once per card and driver, which takes from a few minutes to over an hour."
   ],
   [
    "Controls",
    "ok",
-   "A controller works: it gets you through sign-in, and the game reacts to the stick in the first mission. With fixes waiting for review, a tester walked around the open world for 17 minutes, at 2 to 3 frames a second."
+   "A controller gets you through sign-in and the menus, and in the first mission you control the player. With fixes waiting for review, a tester walked around the open world for 17 minutes."
+  ],
+  [
+   "Display options",
+   "ok",
+   "Start options pick 1080p or 4K output and a borderless full-screen window. A Series S mode runs the game as the smaller console at 1280 by 720, about 29% faster on an RTX 3060, and stays off unless switched on."
   ],
   [
    "Graphics programs",
    "ok",
-   "Menus and loading screens draw with the game's graphics programs, translated for PC graphics cards; in the official version all but 12 of 29,278 translate."
+   "The game's graphics programs are translated for PC graphics cards; in the official version all but 12 of 29,278 translate. A faster translator core written in Rust is in, off by default while it is checked."
   ],
   [
    "Graphics",
    "wait",
-   "In the official version the lit 3D world now shows on NVIDIA cards once the game's graphics programs are built ahead of time, but at under 1 frame a second and with some textures wrong. On other cards it still needs fixes waiting for review."
+   "On NVIDIA the lit 3D world shows in the official version, but slowly, at 2 frames a second or less, with blurry textures and some lighting wrong. On AMD cards the lit world still needs fixes waiting for review."
   ],
   [
    "Sound and video",
    "ok",
-   "The intro movie plays and sound works on some PCs. On Linux, a fix accepted on 26 November adds the missing piece Wine needed for the game's sound; in a test run most of the sound played."
+   "The intro movie plays and sound works on some PCs. On Linux, most of the game's sound now plays through Wine."
   ],
   [
    "Crashes",
    "wait",
-   "Many runs still crash or freeze after loading; in the official version the longest last about 15 minutes in the world. A fix for a crash that ended Linux runs with AMD graphics after two minutes was accepted on 26 November."
+   "On one NVIDIA laptop, three test runs reached the 15-minute test limit with no crash. On Linux with AMD graphics, runs still often freeze when some lighting work runs longer than the driver allows."
   ]
  ],
  "numbers": [
   [
-   "969",
+   "973",
    "changes sent in",
-   "since Leonardo opened; 710 accepted, 59 waiting for review"
+   "since Leonardo opened; 712 accepted, 61 waiting for review"
   ],
   [
    "44",
@@ -3110,7 +3115,7 @@ const DATA = {
    "66 being worked on, 389 done"
   ],
   [
-   "12,769",
+   "12,772",
    "code edits",
    "since work began on 20 November"
   ],
@@ -7762,7 +7767,7 @@ const DATA = {
   [
    "2026-11-27T03:22:31Z",
    "TOOL",
-   "waiting"
+   "accepted"
   ],
   [
    "2026-11-27T03:34:08Z",
@@ -7978,9 +7983,99 @@ const DATA = {
    "2026-11-27T11:26:22Z",
    "RT",
    "waiting"
+  ],
+  [
+   "2026-11-27T11:40:43Z",
+   "RT",
+   "accepted"
+  ],
+  [
+   "2026-11-27T12:08:03Z",
+   "D3D",
+   "waiting"
+  ],
+  [
+   "2026-11-27T12:20:37Z",
+   "RT",
+   "waiting"
+  ],
+  [
+   "2026-11-27T12:29:02Z",
+   "RT",
+   "waiting"
   ]
  ],
  "news": [
+  [
+   "2026-11-27T12:00:00Z",
+   "team",
+   "Leonardo now counts as playable, with bugs: on NVIDIA cards the official version loads into the lit open world and you control the player in the first mission, with menus, sound and a controller working. It is still slow, at 2 frames a second or less, textures stay blurry, some lighting is wrong, and loading plus the one-time graphics build take a long time. Runs on Linux with AMD graphics still often freeze, Mac stops while loading the world, and Intel graphics has not been tried."
+  ],
+  [
+   "2026-11-27T10:20:00Z",
+   "ok",
+   "Building the graphics programs ahead of time on NVIDIA got simpler: the helper packs them in smaller pieces by default and names any it had to skip. In a Linux test through Wine on an RTX 5080, the lit opening scene appeared after 4 minutes, in a run started without a cache."
+  ],
+  [
+   "2026-11-27T05:03:47Z",
+   "ok",
+   "An optional fix is accepted for NVIDIA runs where the world drew only in black and white: it keeps a work limit on some long loops in the graphics programs."
+  ],
+  [
+   "2026-11-27T04:25:41Z",
+   "ok",
+   "The translator core, rewritten in Rust to convert the game's graphics programs faster, is now in the official version. It is off by default while it is checked against the existing one."
+  ],
+  [
+   "2026-11-27T03:08:44Z",
+   "ok",
+   "Linux with NVIDIA: a new start option (play.sh --nvidia-prologue) gets runs past the point where the game's own watchdog used to stop them."
+  ],
+  [
+   "2026-11-27T03:05:40Z",
+   "ok",
+   "The start option for NVIDIA cards with 8 GB (--nvidia-8gb) now also leaves room for PCs with 16 GB of system memory, on Windows and on Linux."
+  ],
+  [
+   "2026-11-27T02:49:21Z",
+   "ok",
+   "A memory refresh the port does every frame got faster: in the open world it went from 38 to 42 milliseconds a frame down to 21."
+  ],
+  [
+   "2026-11-27T02:47:52Z",
+   "ok",
+   "The game window now has the Project Leonardo icon, and its title bar shows the processor and graphics card makers and the frame rate."
+  ],
+  [
+   "2026-11-27T02:45:33Z",
+   "ok",
+   "Testers get debug tools in the game, off unless switched on: a free camera, a frame freeze, an on-screen overlay and a key that skips ahead to the world."
+  ],
+  [
+   "2026-11-26T22:39:12Z",
+   "ok",
+   "On Windows the game now opts out of the power-saving mode that can slow a program down when its window is not in front."
+  ],
+  [
+   "2026-11-26T22:20:45Z",
+   "ok",
+   "New display options: the game can output at 1080p or 4K and run in a borderless full-screen window."
+  ],
+  [
+   "2026-11-26T21:54:25Z",
+   "ok",
+   "The launcher's Play button now offers the same graphics card profiles as the start script: Automatic, NVIDIA prologue and NVIDIA 8 GB."
+  ],
+  [
+   "2026-11-26T21:46:17Z",
+   "ok",
+   "Graphics cards without mesh shaders, such as Apple chips through Wine, can now do the game's mesh drawing through a slower fallback path (--mesh-compute). It is still being tested on a Mac."
+  ],
+  [
+   "2026-11-26T21:06:24Z",
+   "ok",
+   "In the Series S mode, the sign-in and loading screens now draw their menus over the picture as they should."
+  ],
   [
    "2026-11-26T15:40:00Z",
    "team",
@@ -8657,7 +8752,7 @@ const DATA = {
    "Leonardo opens and the first change comes in"
   ]
  ],
- "heroCaveat": "though the 3D world shows only on NVIDIA cards after an extra setup step, at under 1 frame a second"
+ "heroCaveat": "though the lit 3D world shows only on NVIDIA cards, after a one-time step that builds the graphics programs ahead, and it runs slowly with blurry textures and lighting bugs"
 };
 
 
@@ -8790,7 +8885,10 @@ const DATA = {
 
   /* ---------- Hero verdict & 8-stop stage ladder ---------- */
   const playable = done >= N;
-  $("verdictTitle").textContent = playable ? "Playable." : "Not playable yet.";
+  // The "Playable, with bugs" stop counts as playable for the headline (owner's call, 27.11).
+  const withBugsAt = stops.findIndex(s => /^playable\b/i.test(s));
+  $("verdictTitle").textContent = playable ? "Playable." :
+    (withBugsAt >= 0 && done > withBugsAt) ? "Playable, with bugs." : "Not playable yet.";
 
   const summaryEl = $("verdictSummary");
   if (done > 0) {
