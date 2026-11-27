@@ -2984,7 +2984,7 @@
 <script>
 // Everything on the page comes from here. Update these numbers and redeploy.
 const DATA = {
- "updated": "2026-11-27T12:31:56Z",
+ "updated": "2026-11-27T12:44:09Z",
  "historyStarts": "2026-11-20",
  "leonardoOpened": "2026-11-23T23:33:19Z",
  "stops": [
@@ -3001,7 +3001,8 @@ const DATA = {
  "withFixes": 6,
  "score": {
   "model": "PortWatch VI",
-  "note": "Best result on the main build on any PC, scored the way PortWatch VI scores builds. playable is 1: in the first mission the player is in control and the on-screen hints react to the stick (Linux on an RX 7800 XT with an Intel processor, main), and on NVIDIA the lit 3D world draws on main once the graphics programs the run uses are built ahead (RTX 5070 Ti laptop, 26 November: 3 runs to the 15-minute cap with no device loss; RTX 5080 under Linux and Wine, 27 November: lit opening scene at 4 minutes with the smaller default pre-build chunks). Textures stay at low detail and some lighting is wrong, so rendering is 0.2; the world runs at about 0.4 to 2 frames a second, so fps is 1.5; runs on Linux with AMD graphics still often freeze, so stability is often. On 27 November the project moved its own stop to Playable, with bugs.",
+  "shown": 60,
+  "note": "Shown as 60%, set by hand on 27 November (the PortWatch VI calculation from the values below gives 55.5%). Best result on the main build on any PC. playable is 1: in the first mission the player is in control and the on-screen hints react to the stick (Linux on an RX 7800 XT with an Intel processor, main), and on NVIDIA the lit 3D world draws on main once the graphics programs the run uses are built ahead (RTX 5070 Ti laptop, 26 November: 3 runs to the 15-minute cap with no device loss; RTX 5080 under Linux and Wine, 27 November: lit opening scene at 4 minutes with the smaller default pre-build chunks). Textures stay at low detail and some lighting is wrong, so rendering is 0.2; the world runs at about 0.4 to 2 frames a second, so fps is 1.5; runs on Linux with AMD graphics still often freeze, so stability is often. On 27 November the project moved its own stop to Playable, with bugs.",
   "ladder": {
    "loads": 1,
    "boots": 1,
@@ -8939,7 +8940,10 @@ const DATA = {
     }
     return Math.round(score * 10) / 10;
   }
-  const pct = portwatchScore(DATA.score);
+  /* DATA.score.shown (27.11, Erik's call): a hand-set percentage replaces the PortWatch VI calculation, and the
+     caption then stops claiming that tracker's method. */
+  const shown = DATA.score && typeof DATA.score.shown === "number" ? DATA.score.shown : null;
+  const pct = shown !== null ? Math.max(0, Math.min(100, shown)) : portwatchScore(DATA.score);
   const ratioEl = $("stepRatio");
   const ratioNumNode = document.createTextNode(skipEntrances ? pct.toFixed(1) : "0.0");
   pendingSnap.push(() => { ratioNumNode.nodeValue = pct.toFixed(1); });
@@ -8948,7 +8952,9 @@ const DATA = {
   ratioEl.appendChild(el("span", "", "%"));
   const scaleName = (DATA.score && DATA.score.model) || "PortWatch VI";
   $("stepCaption").textContent = "Progress score";
-  $("stepScale").textContent = "Scored the way the " + scaleName + " tracker scores ports: getting in and moving the character is worth 50%; the other 50% is how well it runs, and that has barely started.";
+  $("stepScale").textContent = shown !== null
+    ? "Our own estimate: getting in and moving the character is worth about half; the rest is how well it runs, and that has only just started."
+    : "Scored the way the " + scaleName + " tracker scores ports: getting in and moving the character is worth 50%; the other 50% is how well it runs, and that has barely started.";
   $("meterDone").style.width = pct + "%";
   $("meterWait").style.width = "0";
   const meter = $("stepMeter");
